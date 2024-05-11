@@ -1,5 +1,5 @@
 ---
-title: Example Category
+title: 示例
 description: A description of this category
 image:
 

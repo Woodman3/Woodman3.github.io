@@ -3,6 +3,10 @@ title: Shortcodes
 description: Useful shortcodes that can be used in Markdown
 date: 2023-08-25 00:00:00+0000
 image: cover.jpg
+categories:
+    - 示例
+tags:
+    - Example Tag
 ---
 
 For more details, check out the [documentation](https://stack.jimmycai.com/writing/shortcodes).
