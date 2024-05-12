@@ -1,5 +1,5 @@
 # Change baseurl before deploy
-baseurl = "https://woodman3.github.io"
+baseurl = "https://woodman3.github.io/"
 languageCode = "en-us"
 paginate = 5
 title = "马孔多还在下雨"
