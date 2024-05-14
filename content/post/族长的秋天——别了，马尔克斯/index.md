@@ -2,7 +2,7 @@
 title: "族长的秋天——别了，马尔克斯"
 description: 
 date: 2024-05-13T21:20:14+08:00
-image: 
+image: 118504369_p0.jpg
 math: 
 license: 
 hidden: false
