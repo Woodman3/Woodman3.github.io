@@ -8,7 +8,7 @@ hidden: false
 draft: false 
 categories:
     - coding
-tag:
+tags:
     - cuda
 ---
 
