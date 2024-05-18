@@ -2,7 +2,7 @@
 title: "关于如何在windows下打开摄像头这件事"
 description: 
 date: 2024-05-18T21:48:53+08:00
-image: image.jpg
+image: 118584014_p0.png
 math: 
 license: 
 hidden: false
