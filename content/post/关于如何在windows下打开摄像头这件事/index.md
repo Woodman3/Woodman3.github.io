@@ -8,7 +8,7 @@ license:
 hidden: false
 comments: true
 draft: false 
-tags:
+categories:
     - 折腾
 ---
 
