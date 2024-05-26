@@ -10,6 +10,8 @@ comments: true
 draft: false 
 categories:
     - coding
+tags:
+    - python
 ---
 
 # 问题的提出 
