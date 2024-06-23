@@ -11,7 +11,9 @@ draft: false
 catrgories:
     - coding
 tags:
-    - hpc -cpp -nvidia
+    - hpc 
+    - cpp 
+    - nvidia
 ---
 
 # 文前
