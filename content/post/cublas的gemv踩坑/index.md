@@ -9,7 +9,7 @@ draft: false
 categories:
     - coding
 tags:
-    - cuda
+    - nvidia - hpc
 ---
 
 gemv是我接触的第一个cublas function，然而由于cublas中矩阵是按列保存的，所以对于一个$ m*n$的按行保存的矩阵$A$，调用的正确姿势是
