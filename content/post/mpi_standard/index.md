@@ -2,8 +2,8 @@
 title: "MPI4.1标准的笔记"
 description: 本文用作知识备份，也可作为想要查阅MPI标准的人快速上手
 date: 2024-06-24T10:44:44+08:00
-image: 
-math: 
+image: 119071465_p0.png 
+math:
 license: 
 hidden: false
 comments: true
@@ -15,15 +15,15 @@ tags:
     - mpi
 ---
 
-# 程序规范
+## 程序规范
 
 在标准中对于参数的说明有三种类型，如下：
 
-> IN 仅使用但不更新
+> **IN** 仅使用但不更新
 > 
-> OUT 仅更新但不使用 
+> **OUT** 仅更新但不使用 
 > 
-> INOUT 皆有
+> **INOUT** 皆有
 
 这个说明仅仅是只是告诉你参数会被如何使用，但是并不会强制落实到具体的实现上。
 
@@ -42,11 +42,11 @@ void copyIntBuffer(int *pin , int *pout , int len){
 int a[10];
 copyIntBuffer(a, a+3, 7);// it is forbidden
 ```
-# 术语
+## 术语
 
 在标准中，`message data bufferr`为进程中接受者或收发者的缓冲区，`file data buffer`为MPI的I/O程序建立的缓冲区，`data buffer`的语义为两者之一，具体情况具体分析。
 
-## MPI操作（MPI Operation）
+### MPI操作（MPI Operation）
 
 一个MPI操作是由MPI库函数所构成的一系列数据传输或同步操作，由四个步骤组成。
 
@@ -83,7 +83,7 @@ MPI操作分为形式，分别为阻塞（Blocking），非阻塞（Nonblocking�
 
 使能的要求是不对称的，一个操作可能需要他所有相关的操作都完成了启动，但是自己却不一定需要启动。
 
-## MPI过程（MPI Procedure)
+### MPI过程（MPI Procedure)
 
 过程也可以分为两种，如下所示：
 
@@ -91,3 +91,6 @@ MPI操作分为形式，分别为阻塞（Blocking），非阻塞（Nonblocking�
 
 **本地（Local）**：上述补集
 
+## 参考
+
+[mpi-standard](https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf)
