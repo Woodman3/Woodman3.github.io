@@ -4,6 +4,8 @@ links:
   - title: narohaz
     website: https://www.narohaz.top
 
+  - title: M0
+    website: https://blog.okbsablin.su
 
 menu:
     main: 
