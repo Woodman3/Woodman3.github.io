@@ -2,12 +2,12 @@
 title: "自定义MPI的错误处理函数"
 description: 本文为笔者阅读MPI标准的笔记，仅用作知识备份
 date: 2024-06-25T15:24:09+08:00
-image: 
+image: 119764162_p0.png
 math: true
 license: 
 hidden: false
 comments: true
-draft: true
+draft: false 
 categories:
     - coding
 tags:
