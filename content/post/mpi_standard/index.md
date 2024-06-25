@@ -1,6 +1,6 @@
 ---
-title: "MPI4.1标准的笔记"
-description: 本文用作知识备份，也可作为想要查阅MPI标准的人快速上手
+title: "MPI4.1标准的一些相关术语"
+description: 本文为笔者阅读MPI标准的笔记，仅用作知识备份，也可作为想要查阅MPI标准的人快速上手
 date: 2024-06-24T10:44:44+08:00
 image: 119071465_p0.png 
 math:
