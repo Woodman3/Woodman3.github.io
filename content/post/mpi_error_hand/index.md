@@ -35,7 +35,7 @@ MPI还提供了三种错误处理函数，如下
 
 实现一般会提供其他错误处理函数。但是在一般情况下，`MPI_ERRORS_ARE_FATAL`是默认的错误处理函数。
 
-用户可以使用 `MPI_XXX_CREATE_ERRHANDLER` `MPI_XXX_SET_ERRHANDLER` `MPI_XXX_GET_ERRHANDLER` `MPI_XXX_FREE_ERRHANDLER` 来创建、设置、获取和释放回调函数，其中 `XXX` 为`COMM` `WIN` `FILE` 或 `SESSION`。值得注意的是，回调函数在MPI里是一个模糊实体，对于用户而言是不可见的，只能用句柄来访问。
+用户可以使用 `MPI_XXX_CREATE_ERRHANDLER` `MPI_XXX_SET_ERRHANDLER` `MPI_XXX_GET_ERRHANDLER` `MPI_XXX_FREE_ERRHANDLER` 来创建、设置、获取和释放回调函数，其中 `XXX` 为`COMM` `WIN` `FILE` 或 `SESSION`。值得注意的是，回调函数在MPI里是一个不透明对象，对于用户而言是不可见的，只能用句柄来访问。
 
 ## Error code and class
 
