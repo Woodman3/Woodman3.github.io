@@ -56,7 +56,7 @@ MPI提供了四种初始化函数，如下：
 
 其中，若`size`指定为`0`，则不会暴露内存。
 
-`disp_unit` 为缩放系数，一般而言指定为`0`（不缩放）或`sizeof(type)`。如果使用后者的话，在`size`中就可以直接使用元素的个数了。（标准中说在异构环境下也可正确的缩放）
+`disp_unit` 为缩放系数，一般而言指定为`0`（不缩放）或`sizeof(type)`。（标准中说在异构环境下也可正确的缩放）。但是我在[其他教程](https://enccs.github.io/intermediate-mpi/one-sided-routines/#window-creation)可以看到代码中同时在`size` 和 `disp_unit` 中使用了 `sizeof(type)`。
 
 不同进程创建的窗口在大小上可能是不同的，但是同一块内存可能映射到不同的窗口上。对重叠窗口的并发通信可能有未知的结果。
 
@@ -127,7 +127,7 @@ MPI提供了四种初始化函数，如下：
 
 对于同一块内存的读写冲突会带来位置后果。但是同时的累加操作会顺利进行就好像他们是有序的一样。
 
-你可以将`MPI_PROC_NULL`作为目标，但是依旧会用同步方法来关闭这个epoch（不知道该怎么翻译这个词）
+你可以将`MPI_PROC_NULL`作为目标，但是依旧会用同步方法来关闭这个时期（epoch）
 
 # 内存模型
 
@@ -145,9 +145,53 @@ MPI提供了四种初始化函数，如下：
 
 需要架构上的支持。
 
+# 同步
 
+RMA模型把通信分为了两种类型，如下：
 
+> **active target communication** 直译就是积极通信，在这种通信模式下，源进程和目标进程都会显式参与通信，通信方法分别为`fence` 和 `SPCW`。
+>
+> **passive target communication** 消极通信，这种模式下只有源进程会显示的参与通信，通信方法为`lock` 和 `lock_all`。
+
+## 时期（epoch） 
+
+在介绍同步之前，先介绍时期这个概念。RMA模型中所有的通信操作都必须在一个时期中进行。需要目标进程通过同步操作来暴露时期（exposure epoch）和源进程也需要一个同步操作来访问时期（access epoch）。
+
+## PSCW(Post-Start-Complete-Wait)
+
+PSCW分别是四个不同的操作，目标进程使用Post的操作等价于打开一个暴露时期，而Wait等价于关闭这个暴露时期。源进程的Start则是打开一个访问时期，Complete 为关闭访问时期。
+其具体流程用标准的一张图即可解释：
+
+![12.2](12.2.png)
+
+这种post必须在start前，wait必须在complete后的模式称之为强同步（strong synchronization）。但是强同步一般太理想化，所以如果不遵循这个顺序的情况，称此为弱同步（weak synchronization）。如下图
+
+![12.3](12.3.png)
+
+MPI允许弱同步模式。
+
+## Fence
+
+如果是在BSP范式下，编写PSCW显然十分封锁，但是我们还有另一个法宝——Fence！其差别和对比也可以用一张图来很好的表示（出自一位大牛的paper）
+
+![5](5.png)
+
+## Lock
+
+这里的锁和我们一般在多线程中的锁很像，但是lock操作等同于打开一个时期，并不会建立一个临界区！锁分为排他的（exculsive）和共享的（shared）。排他锁同时之会允许一个进程访问，而共享锁允许其他持有共享锁的进程访问目标进程。
+
+![12.4](12.4.png)
+
+注意，两个源进程的顺序是不确定的！
+
+如果使用锁，那么在时期内的所有RMA操作只会在解锁的时候完成，所以RMA在提供锁的同时，也提供了Flush操作，用来同步用。
+
+![6](6.png)
 
 # 参考
 
 1. [eth_pdf](https://htor.inf.ethz.ch/publications/img/MPI_RMA_and_advanced_MPI.pdf)
+2. [enccs](https://enccs.github.io/intermediate-mpi/one-sided-routines/)
+3. [paper](https://htor.inf.ethz.ch/publications/img/mpi3-rma-overview-and-model.pdf)
+4. [wgropp.34](https://wgropp.cs.illinois.edu/courses/cs598-s16/lectures/lecture34.pdf)
+5. [wgropp.35](https://wgropp.cs.illinois.edu/courses/cs598-s16/lectures/lecture35.pdf)
