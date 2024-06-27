@@ -195,3 +195,4 @@ MPI允许弱同步模式。
 3. [paper](https://htor.inf.ethz.ch/publications/img/mpi3-rma-overview-and-model.pdf)
 4. [wgropp.34](https://wgropp.cs.illinois.edu/courses/cs598-s16/lectures/lecture34.pdf)
 5. [wgropp.35](https://wgropp.cs.illinois.edu/courses/cs598-s16/lectures/lecture35.pdf)
+6. [mpi-standard](https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf)
