@@ -2,7 +2,7 @@
 title: "MPI的RMA机制笔记"
 description: 
 date: 2024-06-26T13:59:16+08:00
-image: 119833826_p0.png
+image: 119833826_p0.jpg
 math: 
 license: 
 hidden: false
