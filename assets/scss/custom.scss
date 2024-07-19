@@ -1,9 +1,105 @@
-/*
-    You can add your own custom styles here.
-*/
 body {
     background-image: url('https://s2.loli.net/2024/02/11/SsDb8MGi4H3QWC1.jpg');
     background-size: cover; // 覆盖整个页面
     background-position: center; // 图片居中显示
     background-attachment: fixed;
+}
+
+//copy by https://lbqaq.top/p/%E7%BB%99blog%E5%A2%9E%E5%8A%A0%E5%8A%A8%E7%94%BB/
+:root {
+    --article-background: #f0f8ff;
+
+    &[data-scheme="dark"] {
+        --article-background: #292d30;
+    }
+}
+
+// 文章列表
+.article-list--compact article {
+    //增加动画
+    transition: .5s ease;
+
+    &:hover {
+        transform: scale(1.02, 1.02);
+        background: var(--article-background);
+    }
+
+    .article-image img {
+        // 变成长方形
+        width: calc(var(--image-size) * 5 / 3);
+        // 增加圆角
+        border-radius: var(--card-border-radius);
+    }
+}
+
+//头像
+.sidebar header .site-avatar .site-logo {
+
+    transition: all 1.75s ease-out;
+
+    &:hover {
+        transform: rotate(360deg);
+    }
+}
+
+//菜单栏
+.menu {
+    //把auto改为visible，为了图标放大溢出时不显示滚动条
+    overflow-y: visible;
+
+    li {
+        transition: .5s ease;
+
+        &:hover {
+            transform: scale(1.1, 1.1);
+        }
+    }
+}
+
+//文章头图
+.article-list article .article-image {
+    //避免出现滚动条
+    overflow: hidden;
+
+    img {
+        //设置图片缩放
+        transition: all .5s ease;
+
+        &:hover {
+            transform: scale(1.2);
+        }
+
+        @include respond(xl) {
+            //加大图片高度
+            height: 385px;
+        }
+    }
+}
+
+//友情链接三栏 (From https://blog.linsnow.cn/p/join-hugo-and-stack/)
+@media (min-width: 1024px) {
+    .article-list--compact.links {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        background: none;
+        box-shadow: none;
+        gap: 1rem;
+
+        article {
+            background: var(--card-background);
+            border: none;
+            box-shadow: var(--shadow-l2);
+            margin-bottom: 8px;
+            border-radius: var(--card-border-radius);
+
+            &:nth-child(odd) {
+                margin-right: 8px;
+            }
+
+            .article-image img {
+                // 恢复成正方形
+                width: var(--image-size);
+            }
+        }
+    }
 }
