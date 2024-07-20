@@ -113,7 +113,7 @@ $$
 $$
 W_{0:B-1,:}=
 \begin{bmatrix}
-\gamma^0&0&...&0&\\
+\gamma^0&0&...&0\\
 0&\gamma^1&...&0\\
 \vdots&\vdots&\ddots&0\\
 0&0&\cdots&\gamma^{(B-1)}
@@ -121,7 +121,7 @@ W_{0:B-1,:}=
 I_A&I_A&...&I_A\\
 I_A&w^{1}_BI_A&...&w_B^{1*(B-1)}I_A\\
 \vdots&\vdots&\ddots&\vdots\\
-I_A&w_B^{(B-1)*1}I_A&...&w_B^{(B-1)*(B-1)} I_A
+I_A&w_B^{(B-1)*1}I_A& ... &w_B^{(B-1)*(B-1)}I_A
 \end{bmatrix}
 $$
 
@@ -130,11 +130,11 @@ $$
 $$
 W=
 \begin{bmatrix}
-\gamma^0&0&...&0&\\
+\gamma^0&0&...&0\\
 0&\gamma^1&...&0\\
 \vdots&\vdots&\ddots&0\\
 0&0&\cdots&\gamma^{B-1}\\
-\gamma^B&0&...&0&\\
+\gamma^B&0&...&0\\
 0&\gamma^{B+1}&...&0\\
 \vdots&\vdots&\ddots&0\\
 0&0&\cdots&\gamma^{AB-1}\\
