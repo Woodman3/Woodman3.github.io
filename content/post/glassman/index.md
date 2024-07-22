@@ -18,7 +18,7 @@ draft: true
 
 为方便起见，本文中所有矩阵的元素的下标从0开始
 
-**本文中所有$ w $的上标皆为幂，请不要与行号列号搞混**
+**本文中所有$w$的上标皆为幂，请不要与行号列号搞混**
 
 $$
 n,m:行、列下标，范围若无特殊说明皆为0到N-1\\
@@ -41,7 +41,7 @@ $$
 
 ### 张量积
 
-也称克罗内克积，记为$ \otimes $ ，我们对于张量积的定义为：
+也称克罗内克积，记为$\otimes$ ，我们对于张量积的定义为：
 
 $$
 A\otimes B=\begin{bmatrix}
@@ -63,7 +63,7 @@ $$
 
 #### 混合乘积性质
 
-如果$ A $、$ B $、$ C $和$ D $是四个矩阵，且矩阵乘积$ AC $和$ BD $存在，那么：
+如果$A$、$B$、$C$和$D$是四个矩阵，且矩阵乘积$AC$和$BD$存在，那么：
 
 $$
 (A \otimes B)(C \otimes D)=AC\otimes BD
@@ -71,7 +71,7 @@ $$
 
 #### 疑似分配律
 
-这个是我自己推出来的，维基上没写，我也不确定是否严谨，但是这个规律对后面的推导用处不小，故列出，若$ A $ 和$ B \otimes C $ 为大小相等的方阵，那么：
+这个是我自己推出来的，维基上没写，我也不确定是否严谨，但是这个规律对后面的推导用处不小，故列出，若$A$ 和$B \otimes C$ 为大小相等的方阵，那么：
 
 $$
 (AB)\otimes C = (A\otimes C)(B \otimes C)
@@ -102,13 +102,13 @@ $$
 \gamma_{N,A}^n:=\{w_N^{n*0},w_N^{n*1}...w_N^{n*(A-1)}\}\\
 $$
 
-后文简写为$ \gamma^n $ ，我们可以把$ W $ 矩阵中的第$ n $ 行写为
+后文简写为$\gamma^n$ ，我们可以把$W$ 矩阵中的第$n$ 行写为
 
 $$
 \{\gamma^nw^{n*0}_B,\gamma^nw^{n*1}_B...\gamma^nw^{nm_B}_B\}
 $$
 
-我们可以把$ W $ 矩阵的前$ B $行进一步分解：
+我们可以把$W$ 矩阵的前$B$行进一步分解：
 
 $$
 W_{0:B-1,:}=
@@ -146,10 +146,10 @@ I_A&w_B^{(B-1)*1}I_A&...&w_B^{(B-1)*(B-1)} I_A
 \end{bmatrix}
 
 $$
-我们记左边的矩阵为$ F_N $ ，表示这个是一个$N$阶矩阵，那么化简可得
+我们记左边的矩阵为 $F^{A,B}$ ，表示每个 $\gamma$ 有$A$ 个元素，每一行有$B$个$/gamma$么原式化简可得
 $$
 
-W_N = F_N (W_B \otimes I_A)
+W_N = F^{A/B} (W_B \otimes I_A)
 
 $$
 
@@ -157,10 +157,10 @@ $$
 
 $$
 \begin{aligned}
-W_N &= F_N (W_{N_2...N_k} \otimes I_{N_1})\\
-&= F_N ((F_{N/N_1}(W_{N_3...N_k} \otimes I_{N_2}))\otimes I_{N_1})\\
-&=F_N((F_{N/N_1} \otimes I_{N_1})(W_{N_3...N_k}\otimes I_{N_2}\otimes I_{N_1}))\\
-&=F_N(F_{N/N_1} \otimes I_{N_1})(F_{N_3...N_k}\otimes I_{N_1}\otimes I_{N_2})...(F_{N_{k-1}N_k} \otimes I_{N_1} \otimes ... \otimes I_{N_{k-2}})(W_{N_k} \otimes ...)
+W_N &= F^{N_1,N/N_1} (W_{N_2...N_k} \otimes I_{N_1})\\
+&= F^{N_1,N/N_1} ((F_{N_2,N_3...N_k}(W_{N_3...N_k} \otimes I_{N_2}))\otimes I_{N_1})\\
+&=F^{N_1,N/N_1}((F^{N_2,N_3...N_k} \otimes I_{N_1})(W_{N_3...N_k}\otimes I_{N_2}\otimes I_{N_1}))\\
+&=F^{N_1,N/N_1}(F^{N_2,N_3...N_k} \otimes I_{N_1})(F{N_3,N_4...N_k)}\otimes I_{N_1}\otimes I_{N_2})...(F^{N_{k-1},N_k} \otimes I_{N_1} \otimes ... \otimes I_{N_{k-2}})(W_{N_k} \otimes ...)
 \end{aligned}
 $$
 
@@ -170,14 +170,61 @@ $$
 I_{N_1} \otimes I_{N_2} = I_{N_1N_2}
 $$
 
-于是各种符号可以简化为
-
-
-简化一下符号标记，便有了
+于是各种符号可以简化以下，比如令
+$$
+\begin{aligned}
+F_t = F^{N_t,N_{t+1}...} \otimes I_{N_1} \otimes ... \otimes I_{N_{t-1}}
+&=F^{N_t,N_{t+1}...} \otimes I_{N_1N_2...N_{t-1}}
+\end{aligned}
+$$
+便有了
 
 $$
 W_N = F_1F_2...F_k
 $$
+
+至此，这就是glassman的基本思想：把一个大矩阵分解成一堆简单的矩阵，下面介绍具体算法如何实现。
+
+## 实现
+
+让我们再次回到起点，我们的目标是计算这么一个简单的式子：
+
+$$
+v=W_Nu
+$$
+
+经过分解，可以化简为
+
+$$
+v=F_1F_2...F_ku
+$$
+
+矩阵乘法符合结合律，所以我们从右往左计算，我们发现每一步都可以作一定程度上的化简，比如把$v$分块：
+
+$$
+\begin{aligned}  
+F_tu  =\\
+&=F^{N_t,N_{}...N_k} \otimes I_{N_1N_2...N_{t-1}} u\\
+&= \begin{bmatrix}
+f_{0,0}I&f_{0,1}I&0&0&...\\
+0&0&f_{1,2}I&f_{1,3}I&...\\
+\vdots 
+\end{bmatrix}
+\begin{bmatrix}
+v_0\\
+v_1\\
+\vdots \\
+v_{N_t ... N_k}
+\end{bmatrix}\\
+&= \begin{bmatrix}
+f_{0,0}v_0&f_{0,1}v_1&...&0&...\\
+0&...&f_{1,N_t}v_{N_t}&f_{1,N_t+1}v_{N_t+1}&...\\
+\vdots 
+\end{bmatrix}
+\end{aligned}
+$$
+
+然后递归求和即可。
 
 
 ​                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
