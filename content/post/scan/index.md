@@ -1,13 +1,18 @@
 ---
-title: "前缀和算法及其分段版本"
+title: "前缀和算法及其分段版本的并行化方法"
 description: 
 date: 2024-07-24T15:03:27+08:00
-image: 
-math: 
+image: 120645705_p0.png 
+math: true
 license: 
 hidden: false
 comments: true
 draft: false 
+categories:
+    - coding
+tags:
+    - hpc
+    - cpp
 ---
 
 cmu15418在2012年的课程里还有讲这个算法，但是现在我在他的课程大纲上已经看不到这个算法的讲解。

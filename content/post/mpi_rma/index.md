@@ -8,6 +8,11 @@ license:
 hidden: false
 comments: true
 draft: false
+categories:
+    - coding
+tags:
+    - hpc
+    - mpi
 ---
 
 ## 介绍
