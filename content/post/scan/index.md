@@ -42,6 +42,7 @@ void exclusive_scan_seq(T* a,T init, size_t n, OP op){
 
 ### 并行
 
+![cmu课件配图](cmu-1.PNG)
 ```cpp
 template<typename T, class OP>
 void exclusive_scan_par(T* a,T init, size_t n, OP op){
@@ -98,6 +99,7 @@ void exclusive_seg_scan_seq(T* a,int* flags,T init, size_t n, OP op){
 
 ### 并行
 
+![cmu课件配图](cmu-2.PNG)
 ```cpp
 template<typename T, class OP>
 void exclusive_seg_scan_par(T* a,int* flags,T init, size_t n, OP op){
@@ -136,7 +138,7 @@ void exclusive_seg_scan_par(T* a,int* flags,T init, size_t n, OP op){
     }
 }
 ```
-这个代码我虽然无法理解，但是他运行的结果和串行版本一致，[ 源码在此 ](https://github.com/Woodman3/hpc_algorithm.git)，如果有纰漏的情况还请指出。
+这个代码我虽然无法完全理解，但是他运行的结果和串行版本一致，[ 源码在此 ](https://github.com/Woodman3/hpc_algorithm.git)，如果有纰漏的情况还请指出。
 
 在课程的ppt中，可能是默认初始值为0的缘故，反向的过程有些bug，毕竟在初始值为0的情况下，`+ 0`和啥也不写没区别。
 
