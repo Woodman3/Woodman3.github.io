@@ -45,14 +45,15 @@ body {
 //菜单栏
 .menu {
     //把auto改为visible，为了图标放大溢出时不显示滚动条
+    // 我自己试了下发现还是有滚动条，就把缩放效果取消了
     overflow-y: visible;
 
     li {
         transition: .5s ease;
 
-        &:hover {
-            transform: scale(1.1, 1.1);
-        }
+        // &:hover {
+        //     transform: scale(1.1, 1.1);
+        // }
     }
 }
 
