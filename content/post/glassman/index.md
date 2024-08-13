@@ -1,13 +1,13 @@
 ---
-title: "Glassman 傅里叶变换的基本原理"
-description: 
+title: "Glassman快速傅里叶变换"
+description: 本文的公式可能无法显示完全。
 date: 2024-07-12T20:45:43+08:00
 image: 
 math: true
 license: 
 hidden: false
 comments: true
-draft: true 
+draft: false
 ---
 
 ## 文前
@@ -77,6 +77,12 @@ $$
 (AB)\otimes C = (A\otimes C)(B \otimes C)
 $$
 
+#### 与向量乘法
+
+$vec(V)$表示把矩阵v按列堆叠为一个列向量。
+$$ 
+(A\otimes B)vec(V) = vec(BVA^T)
+$$
 
 ## 矩阵的分解
 
@@ -146,21 +152,21 @@ I_A&w_B^{(B-1)*1}I_A&...&w_B^{(B-1)*(B-1)} I_A
 \end{bmatrix}
 
 $$
-我们记左边的矩阵为 $F^{A,B}$ ，表示每个 $\gamma$ 有$A$ 个元素，每一行有$B$个$/gamma$么原式化简可得
+我们记左边的矩阵为 $F^{A,B}$ ，表示每个 $\gamma$ 有$A$ 个元素，每一行有$B$个$\gamma$那么原式化简可得
 $$
 
 W_N = F^{A/B} (W_B \otimes I_A)
 
 $$
 
-我们成功提出了一个更小的矩阵，现在我们拓展一下$ N=N_1N_2...N_k $ ，这么递归下去，可以得到
+我们成功提出了一个更小的矩阵，现在我们拓展一下$N=N_1N_2...N_k$ ，这么递归下去，可以得到
 
 $$
 \begin{aligned}
 W_N &= F^{N_1,N/N_1} (W_{N_2...N_k} \otimes I_{N_1})\\
 &= F^{N_1,N/N_1} ((F_{N_2,N_3...N_k}(W_{N_3...N_k} \otimes I_{N_2}))\otimes I_{N_1})\\
 &=F^{N_1,N/N_1}((F^{N_2,N_3...N_k} \otimes I_{N_1})(W_{N_3...N_k}\otimes I_{N_2}\otimes I_{N_1}))\\
-&=F^{N_1,N/N_1}(F^{N_2,N_3...N_k} \otimes I_{N_1})(F{N_3,N_4...N_k)}\otimes I_{N_1}\otimes I_{N_2})...(F^{N_{k-1},N_k} \otimes I_{N_1} \otimes ... \otimes I_{N_{k-2}})(W_{N_k} \otimes ...)
+&=F^{N_1,N/N_1}(F^{N_2,N_3...N_k} \otimes I_{N_1})(F^{N_3,N_4...N_k}\otimes I_{N_1}\otimes I_{N_2})...(F^{N_{k-1},N_k} \otimes I_{N_1} \otimes ... \otimes I_{N_{k-2}})(W_{N_k} \otimes ...)
 \end{aligned}
 $$
 
@@ -199,36 +205,58 @@ $$
 v=F_1F_2...F_ku
 $$
 
-矩阵乘法符合结合律，所以我们从右往左计算，我们发现每一步都可以作一定程度上的化简，比如把$v$分块：
+矩阵乘法符合结合律，所以我们从右往左计算，我们发现每一步都可以作一定程度上的化简，比如把$v$分块重组为一个矩阵$V$：
 
 $$
 \begin{aligned}  
-F_tu  =\\
-&=F^{N_t,N_{}...N_k} \otimes I_{N_1N_2...N_{t-1}} u\\
-&= \begin{bmatrix}
-f_{0,0}I&f_{0,1}I&0&0&...\\
-0&0&f_{1,2}I&f_{1,3}I&...\\
-\vdots 
-\end{bmatrix}
-\begin{bmatrix}
-v_0\\
-v_1\\
-\vdots \\
-v_{N_t ... N_k}
-\end{bmatrix}\\
-&= \begin{bmatrix}
-f_{0,0}v_0&f_{0,1}v_1&...&0&...\\
-0&...&f_{1,N_t}v_{N_t}&f_{1,N_t+1}v_{N_t+1}&...\\
-\vdots 
-\end{bmatrix}
+F_t v =F^{N_t,N_{}...N_k} \otimes I_{N_1N_2...N_{t-1}} v\\
+&=vec(I_{N_1N_2...N_{t-1}} V F^{N_t,N_{}...N_k}) \\
+&=vec(V(F^{N_t,N_{}...N_k})^T))
 \end{aligned}
 $$
 
 然后递归求和即可。
 
+## 代码
 
-​                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+```cpp
+void fun(double *u,complex<double> *v,int n){
+    int a=1;
+    int b=n;
+    int c=1;
+    complex<double> *worker = new complex<double>[n];
+    for(int i=0;i<n;i++)
+        worker[i] = u[i];
+    while(b>1){
+        a*=c;
+        c=2;
+        while(b%c) c++;
+        b/=c;
+        complex<double> step(cos(2*M_PI/(a*c)),sin(2*M_PI/(a*c)));
+        complex<double> cstep(1,0);
+        for(int ic=0;ic<c;ic++){
+            for(int ia=0;ia<a;ia++){
+                for(int vr=0;vr<b;vr++){
+                    complex<double> t(0,0);
+                    complex<double> gamma(1,0);
+                    for(int i=0;i<c;i++){
+                        t+=worker[(ia*c+i)*b+vr]*gamma;
+                        gamma*=cstep;
+                    }
+                    v[(ia*c+ic)*b+vr] = t;
+                }
+                cstep*=step;
+            }
+        }
+        for(int i=0;i<n;i++){
+            worker[i]=v[i]; 
+        }
+    }
+}
+```
+## 复杂度
 
+算法的循环次数为$O(n(N_1+N_2+...+N_k))$在最坏的情况下，比如这个数是质数，他的复杂度高达$O(n^2)$，事实上，把项目中里的glassman算法替换为fftw的库的话，可以提高不少的速度。
 
 ## 引用
 
