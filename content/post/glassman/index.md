@@ -2,7 +2,7 @@
 title: "Glassman快速傅里叶变换"
 description: 本文的公式可能无法显示完全。
 date: 2024-07-12T20:45:43+08:00
-image: 
+image: 121575678_p0.png
 math: true
 license: 
 hidden: false
