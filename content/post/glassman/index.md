@@ -1,5 +1,5 @@
 ---
-title: "Glassman快速傅里叶变换"
+title: Glassman快速傅里叶变换
 description: 本文的公式可能无法显示完全。
 date: 2024-07-12T20:45:43+08:00
 image: 121575678_p0.png
@@ -8,6 +8,10 @@ license:
 hidden: false
 comments: true
 draft: false
+categories:
+  - 学习
+tags:
+  - 数学
 ---
 
 ## 文前
