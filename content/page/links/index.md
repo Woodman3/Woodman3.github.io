@@ -10,6 +10,11 @@ links:
     image: https://blog.okbsablin.su/images/avatar.png
     website: https://blog.okbsablin.su
 
+  - title: Tastor
+    image: https://avatars.githubusercontent.com/u/74226084?v=4
+    description: 小猪
+    website: https://tastror.github.io
+
 menu:
     main: 
         weight: 4
