@@ -154,13 +154,12 @@ I_A&w^{1}_BI_A&...&w_B^{1*(B-1)}I_A\\
 \vdots&\vdots&\ddots&\vdots\\
 I_A&w_B^{(B-1)*1}I_A&...&w_B^{(B-1)*(B-1)} I_A
 \end{bmatrix}
-
 $$
+
 我们记左边的矩阵为 $F^{A,B}$ ，表示每个 $\gamma$ 有$A$ 个元素，每一行有$B$个$\gamma$那么原式化简可得
+
 $$
-
 W_N = F^{A/B} (W_B \otimes I_A)
-
 $$
 
 我们成功提出了一个更小的矩阵，现在我们拓展一下$N=N_1N_2...N_k$ ，这么递归下去，可以得到
