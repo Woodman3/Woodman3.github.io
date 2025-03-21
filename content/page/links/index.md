@@ -15,6 +15,9 @@ links:
     description: 小猪
     website: https://tastror.github.io
 
+  - title: 鼠鼠
+    website: https://asterich.top/
+
 menu:
     main: 
         weight: 4

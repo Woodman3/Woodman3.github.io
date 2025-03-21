@@ -65,9 +65,11 @@ body {
     img {
         //设置图片缩放
         transition: all .5s ease;
+        filter: blur(10px); // 默认模糊
 
         &:hover {
             transform: scale(1.2);
+            filter: blur(0); // 悬停时清晰
         }
 
         @include respond(xl) {
