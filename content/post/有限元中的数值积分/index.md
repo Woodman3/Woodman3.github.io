@@ -1,13 +1,18 @@
 ---
-title: "有限元中的数值积分"
+title: 有限元中的数值积分
 description: 
 date: 2025-03-18T16:48:15+08:00
-image: 
+image: GkIr6doaAAMJNYZ.jpg
 math: true
 license: 
 hidden: false
 comments: true
-draft: false 
+draft: false
+categories:
+  - 学习
+tags:
+  - 数学
+  - cpp
 ---
 
 我使用的数值积分方法是高斯勒让德积分，后面全文的所有内容都是基于这种积分方法的。这种积分如何计算在此就略过不表了。
