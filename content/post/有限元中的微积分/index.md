@@ -1,13 +1,13 @@
 ---
-title: "有限元中的微积分"
-description: 一些在写二阶单元的有限元热传导求解器过程中遇到的数学问题 
+title: 有限元中的微积分
+description: 一些在写二阶单元的有限元热传导求解器过程中遇到的数学问题
 date: 2025-04-16T16:56:01+08:00
-image: 
+image: 110985955_p0.png
 math: true
 license: 
 hidden: false
 comments: true
-draft: false 
+draft: false
 categories:
   - 学习
 tags:
@@ -15,7 +15,7 @@ tags:
   - cpp
 ---
 
-这个公式被gpt称作Dirichlet积分公式,但是我用搜索引擎搜不到这个公式的具体名字,那么我也就这么叫他好了,gpt总不会骗我吧(
+这个公式被gpt称作Dirichlet积分公式,但是我用搜索引擎搜不到这个公式的具体名字,那么我也就这么叫他好了，gpt总不会骗我吧(
 
 
 ## Dirichlet积分公式
