@@ -1,8 +1,8 @@
 ---
-title: "龙格库塔法的稳定性分析"
-description: "部分内容由gpt生成"
+title: 龙格库塔法的稳定性分析
+description: 部分内容由gpt生成
 date: 2025-06-03T15:48:33+08:00
-image: 
+image: 9db1a0eeea60e9f7d3c1e234a5d61b0f1741301.jpg
 math: true
 license: 
 hidden: false
