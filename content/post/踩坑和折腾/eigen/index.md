@@ -1,16 +1,18 @@
 ---
-title: "Eigen中的运行时选择稀疏矩阵求解器"
+title: Eigen中的运行时选择稀疏矩阵求解器
 description: 
 date: 2025-07-01T17:36:12+08:00
-image: 
+image: 131114090_p0.jpg
 math: 
 license: 
 hidden: false
 comments: true
-draft: trueas
+draft: false
+categories:
+  - 踩坑和折腾
+tags:
+  - cpp
 ---
-
-
 
 ## 起因
 
