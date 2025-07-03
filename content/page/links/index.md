@@ -18,6 +18,10 @@ links:
   - title: 鼠鼠
     website: https://asterich.top/
 
+  - title: 城城
+    image: https://avatars.githubusercontent.com/u/178278997?v=4
+    website: https://ccoskrnl.github.io/notes/
+
 menu:
     main: 
         weight: 4
