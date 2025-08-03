@@ -7,11 +7,12 @@ math:
 license: 
 hidden: false
 comments: true
-draft: true
+draft: false
 categories:
   - 乱记
 tags:
   - 音乐
+  - 生活
 ---
 按照下单时间排序
 ## 《Completeness》——ave mujica
