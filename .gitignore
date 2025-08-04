@@ -2,4 +2,4 @@ public
 resources
 .hugo_build.lock
 *.code-workspace
-content/post/.obsidian
+assets/jsconfig.json
