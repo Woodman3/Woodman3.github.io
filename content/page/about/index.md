@@ -1,9 +1,9 @@
 ---
-title: "About"
-layout: "about"
+title: "关于"
 slug: "about"
 menu:
     main:
+        name: "About"
         weight: 1
         params: 
             icon: about 
