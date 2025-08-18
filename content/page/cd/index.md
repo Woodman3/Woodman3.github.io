@@ -1,10 +1,10 @@
 ---
-title: "CD"
-layout: "cd"
+title: "CD的购买和刻录记录"
 slug: "cd"
 image: b391eb1913173f03507218ac227af1c91741301.jpg
 menu:
     main:
+        name: Disc
         weight: 1
         params: 
             icon: album
