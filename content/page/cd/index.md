@@ -1,18 +1,13 @@
 ---
-title: CD的购买和刻录记录
-description: 
-date: 2025-08-03T23:31:46+08:00
+title: "CD"
+layout: "cd"
+slug: "cd"
 image: b391eb1913173f03507218ac227af1c91741301.jpg
-math: 
-license: 
-hidden: false
-comments: true
-draft: false
-categories:
-  - 乱记
-tags:
-  - 音乐
-  - 生活
+menu:
+    main:
+        weight: 1
+        params: 
+            icon: album
 ---
 按照下单时间排序
 ## 《Completeness》——ave mujica
