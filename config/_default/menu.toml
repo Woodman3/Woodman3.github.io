@@ -3,9 +3,9 @@
 identifier = "home"
 name = "Home"
 url = "/"
-[main.params]
-icon = "home"
-newtab = true
+# [main.params]
+# icon = "home"
+# newtab = true
 
 [[social]]
 identifier = "github"
