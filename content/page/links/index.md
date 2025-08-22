@@ -1,5 +1,5 @@
 ---
-title: Links
+title: "友链"
 links:
   - title: narohaz
     image: https://avatars.githubusercontent.com/u/78553862?v=4
@@ -24,11 +24,24 @@ links:
 
 menu:
     main: 
+        name: Links
         weight: 4
         params:
             icon: link
 
-comments: false
+comments: true 
 ---
+
+# 我的博客信息
+
+名称：木头人的小木屋
+
+简介：人生南北多歧路，时代喧哗造物忙。
+
+网址：https://woodman3.github.io/
+
+头像：https://woodman3.github.io/avatar.jpg
+
+欢迎添加我的友链，如果想要交换友链的话可以在评论留言。
 
 你们都是我的翅膀

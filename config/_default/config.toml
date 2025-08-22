@@ -1,3 +1,4 @@
+enableGitInfo = true
 # Change baseurl before deploy
 baseurl = "https://woodman3.github.io"
 languageCode = "en-us"
@@ -17,3 +18,8 @@ disqusShortname = "woodman3"
 
 [pagination]
 pagerSize = 10
+
+
+[frontmatter]
+# lastmod = [":fileModTime", "lastmod"]
+lastmod=['lastmod', ':git', 'date', 'publishDate']
