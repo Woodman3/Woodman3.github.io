@@ -22,6 +22,11 @@ links:
     image: https://avatars.githubusercontent.com/u/178278997?v=4
     website: https://ccoskrnl.github.io/notes/
 
+  - title: 浴沂咏归
+    image: https://ptpimg.me/qfb9ao.jpg
+    website: https://zexwoo.blog
+    description: ZexWoo’s Blog
+
 menu:
     main: 
         name: Links
