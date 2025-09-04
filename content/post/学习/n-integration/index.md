@@ -1,13 +1,13 @@
 ---
-title: "高维单纯形上的数值积分"
-description: 
+title: 高维单纯形上的数值积分
+description: 老板要求把之前写的积分拓张到N维情况，但是我想不出来这有啥用
 date: 2025-08-27T11:30:35+08:00
-image: 
+image: 641b5c955b9cd5730ae8ddddfd706225161775300.jpg
 math: true
-license: 
+license:
 hidden: false
 comments: true
-draft: true
+draft: false
 categories:
   - 学习
 tags:
@@ -16,7 +16,7 @@ tags:
   - cpp
 ---
 
-老板要求把之前写的积分拓张到N维情况，但是我想不出来这有啥用。本文是对[之前写的数值积分]({{< ref "post/学习/有限元中的数值积分.md" >}})的拓展
+本文是对[之前写的数值积分]({{< ref "post/学习/有限元中的数值积分.md" >}})的拓展。
 
 ## N维空间中的N维单纯形积分
 
