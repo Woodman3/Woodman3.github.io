@@ -127,3 +127,7 @@ void SparseSolverWrapper::init(SparseMatrix A) {
 ## 解决方法
 
 如果连接的库使用了`EIGEN_USE_MKL_ALL`这个宏，那么链接这个库的程序也要启用`EIGEN_USE_MKL_ALL`这个宏，启用后就没问题了。具体原因未知。
+
+## 其他问题
+
+后面我试图添加其他求解器时，发现不应该使用值传递，因为有些求解器不会复制矩阵而是保存矩阵的引用。
