@@ -1,13 +1,19 @@
 ---
-title: "备忘录：使用pprof 分析cpp程序"
-description: "老板的任务罢了"
+title: 备忘录：使用pprof 分析cpp程序
+description: 老板的任务罢了
 date: 2025-09-30T14:37:44+08:00
-image: 
-math: 
-license: 
+image: G2tOID9aoAAq-wu.jpg
+math:
+license:
 hidden: false
 comments: true
-draft: true
+draft: false
+categories:
+  - 踩坑和折腾
+tags:
+  - cpp
+  - 坑
+  - hpc
 ---
 
 ## gperftools
