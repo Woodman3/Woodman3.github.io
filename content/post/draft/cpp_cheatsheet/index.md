@@ -43,3 +43,11 @@ draft: true
 `final`
 
 和`override`差不多，但是阻止后面的子类继续重写这个函数
+
+## 杂项
+
+- 短路表达式是标准的一部分，放心使用
+
+- 有返回值的函数在结尾没有返回属于UB，但是这个有时候会被编译器的内联优化给忽略。使用nvcc编译的时候，没有返回值会导致`Illegal instruction`或`CUDA error: an illegal memory access was encountered`
+
+
