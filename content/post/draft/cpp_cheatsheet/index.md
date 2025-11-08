@@ -1,13 +1,13 @@
 ---
-title: "Cpp_cheatsheet"
+title: Cpp_cheatsheet
 description: 一个助记的，有些东西老是忘
 date: 2025-09-09T15:02:33+08:00
-image: 
-math: 
-license: 
-hidden: false
+image:
+math:
+license:
+hidden: true
 comments: true
-draft: true
+draft: false
 ---
 
 ## 类的成员函数修饰符
