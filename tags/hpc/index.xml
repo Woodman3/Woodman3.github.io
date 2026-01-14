@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hpc on 木头人的小木屋</title><link>https://woodman3.github.io/tags/hpc/</link><description>Recent content in Hpc on 木头人的小木屋</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 30 Sep 2025 14:37:44 +0800</lastBuildDate><atom:link href="https://woodman3.github.io/tags/hpc/index.xml" rel="self" type="application/rss+xml"/><item><title>备忘录：使用pprof 分析cpp程序</title><link>https://woodman3.github.io/p/%E5%A4%87%E5%BF%98%E5%BD%95%E4%BD%BF%E7%94%A8pprof-%E5%88%86%E6%9E%90cpp%E7%A8%8B%E5%BA%8F/</link><pubDate>Tue, 30 Sep 2025 14:37:44 +0800</pubDate><guid>https://woodman3.github.io/p/%E5%A4%87%E5%BF%98%E5%BD%95%E4%BD%BF%E7%94%A8pprof-%E5%88%86%E6%9E%90cpp%E7%A8%8B%E5%BA%8F/</guid><description>&lt;img src="https://woodman3.github.io/p/%E5%A4%87%E5%BF%98%E5%BD%95%E4%BD%BF%E7%94%A8pprof-%E5%88%86%E6%9E%90cpp%E7%A8%8B%E5%BA%8F/G2tOID9aoAAq-wu.jpg" alt="Featured image of post 备忘录：使用pprof 分析cpp程序" /&gt;&lt;h2 id="gperftools"&gt;gperftools
+&lt;/h2&gt;&lt;p&gt;如果是用的ubuntu，可以直接使用apt来安装 &lt;code&gt;libgoogle-perftools-dev&lt;/code&gt;，包管理器会自动安装好unwind和graphiz，但是并不会安装pprof。&lt;/p&gt;
+&lt;p&gt;在链接选项里加上&lt;code&gt;-lprofiler&lt;/code&gt;，但是如果代码里没用上&lt;code&gt;libprofiler.so&lt;/code&gt;里的东西的话实际产物是不会链接这个库的，所以你还许要加一个&lt;code&gt;-Wl,--no-as-needed&lt;/code&gt;来强制链接。&lt;/p&gt;
+&lt;p&gt;运行前要设置一个环境变量&lt;code&gt;CPUPROFILE=./profile ./myprogram&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id="pprof"&gt;pprof
+&lt;/h2&gt;&lt;p&gt;pprof是go里的工具，所以你还需要把go装上才能用。哪怕你手动编译安装gperftool也没有。apt里的go版本太老，得自己去官网下载安装并设置对应的环境变量，在此不多说。&lt;/p&gt;
+&lt;p&gt;go直接装包大概率会因为连不上github而装不上，可以配置goproxy的值来更改下载的地方，这个proxy类似镜像站。&lt;/p&gt;
+&lt;p&gt;下载后的pprof在&lt;code&gt;~/go/bin&lt;/code&gt;下。&lt;/p&gt;
+&lt;p&gt;使用&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pprof --pdf a.out test.prof &amp;gt; test.pdf
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;来生成分析的pdf报告。&lt;/p&gt;</description></item><item><title>前缀和算法及其分段版本的并行化方法</title><link>https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/</link><pubDate>Wed, 24 Jul 2024 15:03:27 +0800</pubDate><guid>https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/</guid><description>&lt;img src="https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/120645705_p0.png" alt="Featured image of post 前缀和算法及其分段版本的并行化方法" /&gt;&lt;p&gt;cmu15418在2012年的课程里还有讲这个算法，但是现在我在他的课程大纲上已经看不到这个算法的讲解。
+国内外关于这个算法的资料大多数也是少的可怜。故作此文。&lt;/p&gt;
+&lt;p&gt;前缀和一般有两种形式，一种在计算时会加上当前的元素（inclusive），另一种则不会（exclusive），本文所述皆为后者。&lt;/p&gt;
+&lt;p&gt;本文为简便起见，皆使用openmp的方式并行。&lt;/p&gt;
+&lt;h2 id="基础前缀和"&gt;基础前缀和
+&lt;/h2&gt;&lt;h3 id="串行"&gt;串行
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;OP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;exclusive_scan_seq&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OP&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;很简单，没啥好说的&lt;/p&gt;
+&lt;h3 id="并行"&gt;并行
+&lt;/h3&gt;&lt;p&gt;&lt;img src="https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/cmu-1.PNG"
+width="1431"
+height="1076"
+srcset="https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/cmu-1_hu_83a2e827359a0f49.PNG 480w, https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/cmu-1_hu_47ddcca186833c7d.PNG 1024w"
+loading="lazy"
+alt="cmu课件配图"
+class="gallery-image"
+data-flex-grow="132"
+data-flex-basis="319px"
+&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;OP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;exclusive_scan_par&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OP&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(;&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma omp parallel for
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma unroll
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-=&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(;&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma omp parallel for
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma unroll
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-=&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;temp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;程序的前半部分我称之为前向传播（在论文原文中为up-sweep），后半部分我称之为反向传播（down-sweep）。&lt;/p&gt;
+&lt;p&gt;cmu15418的ppt给的配图里的数组长度刚好为2的幂次方，但是如果数组不为2的幂次方，那么情况会有些许麻烦。
+想要理解算法的全过程，可以试着先理解反向传播，在去看正向传播。因为我们不难注意到：初始值是在反向传播的过程中才开始被加入到数组中的。
+而根据前缀和的定义，在反向传播的过程中，这个初始值势必会传播到数组上的所有位置。记住这一点，反向传播的过程就好理解多了。&lt;/p&gt;
+&lt;p&gt;我们不难发现，数组的最后一个元素实际上不影响后续的操作，因为反向过程会把数组的最后一个元素设置为初始值，所以我们可以略过最后一个元素。&lt;/p&gt;
+&lt;p&gt;尽管他的复杂度也为$O(n)$，但是根据实际测试（openmp的线程数设置为16），其所消耗的时间依旧比串行版本更久，
+查看编译器生成的汇编后发现，并行版本的前缀和每次循环所需要的指令比串行版本的多的多，而且编译器不会自动做向量化处理。
+通过perf工具还会发现并行版本对cache的访问次数是串行的十倍左右，而且局部性也不太好。&lt;/p&gt;
+&lt;h2 id="分段前缀和"&gt;分段前缀和
+&lt;/h2&gt;&lt;p&gt;相比传统前缀和，我们额外增加了一个&lt;code&gt;flags&lt;/code&gt;来把数组分成大小不同的几段，用&lt;code&gt;1&lt;/code&gt;来表是一个段的开始，&lt;code&gt;0&lt;/code&gt;来表示处于一个段中。
+一般来说，&lt;code&gt;flags&lt;/code&gt;的第一个元素为&lt;code&gt;1&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id="串行-1"&gt;串行
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;OP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;exclusive_seg_scan_seq&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OP&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;tmp&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;tmp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;t&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="并行-1"&gt;并行
+&lt;/h3&gt;&lt;p&gt;&lt;img src="https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/cmu-2.PNG"
+width="1421"
+height="1067"
+srcset="https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/cmu-2_hu_2dfb15ce20271c98.PNG 480w, https://woodman3.github.io/p/%E5%89%8D%E7%BC%80%E5%92%8C%E7%AE%97%E6%B3%95%E5%8F%8A%E5%85%B6%E5%88%86%E6%AE%B5%E7%89%88%E6%9C%AC%E7%9A%84%E5%B9%B6%E8%A1%8C%E5%8C%96%E6%96%B9%E6%B3%95/cmu-2_hu_675a52459a4fcac.PNG 1024w"
+loading="lazy"
+alt="cmu课件配图"
+class="gallery-image"
+data-flex-grow="133"
+data-flex-basis="319px"
+&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;span class="lnt"&gt;28
+&lt;/span&gt;&lt;span class="lnt"&gt;29
+&lt;/span&gt;&lt;span class="lnt"&gt;30
+&lt;/span&gt;&lt;span class="lnt"&gt;31
+&lt;/span&gt;&lt;span class="lnt"&gt;32
+&lt;/span&gt;&lt;span class="lnt"&gt;33
+&lt;/span&gt;&lt;span class="lnt"&gt;34
+&lt;/span&gt;&lt;span class="lnt"&gt;35
+&lt;/span&gt;&lt;span class="lnt"&gt;36
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;template&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="k"&gt;typename&lt;/span&gt; &lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;class&lt;/span&gt; &lt;span class="nc"&gt;OP&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="n"&gt;exclusive_seg_scan_par&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size_t&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;OP&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;fb&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;fb&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(;&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma omp parallel for
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma unroll
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-=&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt;&lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;|=&lt;/span&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(;&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma omp parallel for
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="cp"&gt;#pragma unroll
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;-=&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;T&lt;/span&gt; &lt;span class="n"&gt;temp&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fb&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="nf"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;flags&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;init&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="k"&gt;else&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;op&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="n"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;&lt;span class="n"&gt;temp&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这个代码我虽然无法完全理解，但是他运行的结果和串行版本一致，&lt;a class="link" href="https://github.com/Woodman3/hpc_algorithm.git" target="_blank" rel="noopener"
+&gt; 源码在此 &lt;/a&gt;，如果有纰漏的情况还请指出。&lt;/p&gt;
+&lt;p&gt;在课程的ppt中，可能是默认初始值为0的缘故，反向的过程有些bug，毕竟在初始值为0的情况下，&lt;code&gt;+ 0&lt;/code&gt;和啥也不写没区别。&lt;/p&gt;
+&lt;p&gt;前向过程很好理解，因为flags如果不为0,那么我们可以肯定这一次求和会涉及到其他段。&lt;/p&gt;
+&lt;p&gt;在反向过程中，我们每次都操作都像是在修改一颗树上的两个节点，于是我们把&lt;code&gt;a[i]&lt;/code&gt;称为左节点，&lt;code&gt;a[i+offset]&lt;/code&gt;称之为右节点，以便理解。&lt;/p&gt;
+&lt;p&gt;如果在一次求和中，如果左节点恰为他那个段的最后一位，那么他的值显然是不被右节点所需要的，且此时的右树不需要其他多余的值，那么我们直接给右节点赋予初始值即可。这就是第一个if的目的。&lt;/p&gt;
+&lt;p&gt;如果左节点的flags为1,那么这意味着他在前向过程中已经积累了它所处的段到他这个节点的所有累加的值，这个值有可能被他后面的节点所用到，
+而他后面的节点正好在右节点的子树中，我们需要把他的值与初始值相加以传递给左节点后面的节点。
+而我们在第一个if中已经排除了他是本段最后一个节点的情况。&lt;/p&gt;
+&lt;p&gt;如果左节点的flags为0,意味着左树只是他所在段的一部分，而在他的前面还有段的其他部分。
+他的段的其他部分在上一次的后向过程中已经被存在了右节点中，故我们需要把他与右节点相加。&lt;/p&gt;
+&lt;h2 id="参考"&gt;参考
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.cs.cmu.edu/afs/cs/academic/class/15418-s12/www/lectures/24_algorithms.pdf" target="_blank" rel="noopener"
+&gt;cmu&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>pgc++编译时指定c++版本则无法编译</title><link>https://woodman3.github.io/p/pgc-%E7%BC%96%E8%AF%91%E6%97%B6%E6%8C%87%E5%AE%9Ac-%E7%89%88%E6%9C%AC%E5%88%99%E6%97%A0%E6%B3%95%E7%BC%96%E8%AF%91/</link><pubDate>Mon, 08 Jul 2024 17:48:02 +0800</pubDate><guid>https://woodman3.github.io/p/pgc-%E7%BC%96%E8%AF%91%E6%97%B6%E6%8C%87%E5%AE%9Ac-%E7%89%88%E6%9C%AC%E5%88%99%E6%97%A0%E6%B3%95%E7%BC%96%E8%AF%91/</guid><description>&lt;img src="https://woodman3.github.io/p/pgc-%E7%BC%96%E8%AF%91%E6%97%B6%E6%8C%87%E5%AE%9Ac-%E7%89%88%E6%9C%AC%E5%88%99%E6%97%A0%E6%B3%95%E7%BC%96%E8%AF%91/120269913_p0.png" alt="Featured image of post pgc++编译时指定c++版本则无法编译" /&gt;&lt;h2 id="背景"&gt;背景
+&lt;/h2&gt;&lt;p&gt;由于需要在曙光的超算上用openacc写程序，但是我所在的分区只有pgi编译器。在使用pgc++或者nvc++时，一旦指定的c++版本大于11，编译器就会出现以下错误。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="s2"&gt;&amp;#34;/opt/rh/devtoolset-7/root/usr/include/c++/7/type_traits&amp;#34;&lt;/span&gt;, line 347: error:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; class &lt;span class="s2"&gt;&amp;#34;std::__is_floating_point_helper&amp;lt;long double&amp;gt;&amp;#34;&lt;/span&gt; has already been
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; defined
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; struct __is_floating_point_helper&amp;lt;__float128&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ^
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="s2"&gt;&amp;#34;/opt/rh/devtoolset-7/root/usr/include/c++/7/bits/std_abs.h&amp;#34;&lt;/span&gt;, line 102: error:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;std::abs(long double)&amp;#34;&lt;/span&gt; has already been defined
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; abs&lt;span class="o"&gt;(&lt;/span&gt;__float128 __x&lt;span class="o"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ^
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="m"&gt;2&lt;/span&gt; errors detected in the compilation of &lt;span class="s2"&gt;&amp;#34;main.cpp&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="解决"&gt;解决
+&lt;/h2&gt;&lt;p&gt;这个错误的原因是因为曙光超算在登陆时会自动加载一些模块，使用&lt;code&gt;module list&lt;/code&gt;查看已加载的模块，发现除了我自己手动加载的pgi模块，还有mpi和一个基础的编译器模块，把这两个模块卸除，只留下pgi模块，即可正常编译。&lt;/p&gt;</description></item><item><title>MPI的RMA机制笔记</title><link>https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/</link><pubDate>Wed, 26 Jun 2024 13:59:16 +0800</pubDate><guid>https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/</guid><description>&lt;img src="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/119833826_p0.jpg" alt="Featured image of post MPI的RMA机制笔记" /&gt;&lt;h2 id="介绍"&gt;介绍
+&lt;/h2&gt;&lt;p&gt;Remote Memory Accese（RMA）是MPI中的一种单边通信机制。具体来说，类似于cuda的统一内存，MPI划出了一块内存空间，称之为窗口（window），所有的进程都可以访问或修改这一块内存并且不需要显示的同步操作。&lt;/p&gt;
+&lt;p&gt;在下文中，我将遵循MPI标准中的定义，以源（origin）或源进程来指代调用RMA操作的进程，以目标（target）或目标进程来指代被访问内存的进程。&lt;/p&gt;
+&lt;h2 id="初始化"&gt;初始化
+&lt;/h2&gt;&lt;p&gt;MPI提供了四种初始化函数，如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;MPI_WIN_CREATE&lt;/strong&gt; 每个调用此函数的进程都会暴露一块已经被本地分配的内存。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MPI_WIN_ALLOCATE&lt;/strong&gt; 与上一个的不同在于，用户不需要提前分配好内存。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MPI_WIN_ALLOCATE_SHARED&lt;/strong&gt; 在上一个的基础上，其他进程可以直接读写window。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MPI_WIN_CREATE_DYNAMIC&lt;/strong&gt; 创建出的内存大小是动态的。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id="mpi_win_create"&gt;MPI_WIN_CREATE
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;MPI_WIN_CREATE(base, size, disp_unit, info, comm, win)&lt;/p&gt;
+&lt;p&gt;IN base initial address of window (choice)&lt;/p&gt;
+&lt;p&gt;IN size
+size of window in bytes (non-negative integer)&lt;/p&gt;
+&lt;p&gt;IN
+disp_unit
+local unit size for displacements, in bytes (positive
+integer)&lt;/p&gt;
+&lt;p&gt;IN
+info
+info argument (handle)&lt;/p&gt;
+&lt;p&gt;IN
+comm
+intra-communicator (handle)&lt;/p&gt;
+&lt;p&gt;OUT
+win
+window object (handle)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;其中，若&lt;code&gt;size&lt;/code&gt;指定为&lt;code&gt;0&lt;/code&gt;，则不会暴露内存。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;disp_unit&lt;/code&gt; 为缩放系数，一般而言指定为&lt;code&gt;0&lt;/code&gt;（不缩放）或&lt;code&gt;sizeof(type)&lt;/code&gt;。（标准中说在异构环境下也可正确的缩放）。但是我在&lt;a class="link" href="https://enccs.github.io/intermediate-mpi/one-sided-routines/#window-creation" target="_blank" rel="noopener"
+&gt;其他教程&lt;/a&gt;可以看到代码中同时在&lt;code&gt;size&lt;/code&gt; 和 &lt;code&gt;disp_unit&lt;/code&gt; 中使用了 &lt;code&gt;sizeof(type)&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;不同进程创建的窗口在大小上可能是不同的，但是同一块内存可能映射到不同的窗口上。对重叠窗口的并发通信可能有未知的结果。&lt;/p&gt;
+&lt;p&gt;一个窗口可以在进程里的任意一块内存上被创建，但是，如果使用&lt;code&gt;MPI_ALLOC_MEM&lt;/code&gt;来分配内存的性能表现会更好，在一些系统上使用字节对齐的内存也会有更好的性能。&lt;/p&gt;
+&lt;h3 id="mpi_win_allocate"&gt;MPI_WIN_ALLOCATE
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;MPI_WIN_ALLOCATE(size, disp_unit, info, comm, baseptr, win)&lt;/p&gt;
+&lt;p&gt;IN size size of window in bytes (non-negative integer)&lt;/p&gt;
+&lt;p&gt;IN disp_unit local unit size for displacements, in bytes (positive integer)&lt;/p&gt;
+&lt;p&gt;IN info info argument (handle)&lt;/p&gt;
+&lt;p&gt;IN comm intra-communicator (handle)&lt;/p&gt;
+&lt;p&gt;OUT baseptr initial address of window (choice)&lt;/p&gt;
+&lt;p&gt;OUT win window object (handle)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;size&lt;/code&gt; 为0依旧是有效的。&lt;/p&gt;
+&lt;p&gt;对于&lt;code&gt;MPI_ALLOC_MEM&lt;/code&gt; 和 &lt;code&gt;MPI_FREE_MEM&lt;/code&gt; 的准则也对这个函数有效。（这里的准则指的是这块内存你需要手动释放，并且&lt;code&gt;baseptr&lt;/code&gt;的类型是&lt;code&gt;*void&lt;/code&gt;）。&lt;/p&gt;
+&lt;p&gt;可以在&lt;code&gt;info&lt;/code&gt;中设置内存对齐参数。&lt;/p&gt;
+&lt;h3 id="mpi_win_allocate_shared"&gt;MPI_WIN_ALLOCATE_SHARED
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;MPI_WIN_ALLOCATE_SHARED(size, disp_unit, info, comm, baseptr, win)&lt;/p&gt;
+&lt;p&gt;IN
+size
+size of local window in bytes (non-negative integer)&lt;/p&gt;
+&lt;p&gt;IN
+disp_unit
+local unit size for displacements, in bytes (positive
+integer)&lt;/p&gt;
+&lt;p&gt;IN
+info
+info argument (handle)&lt;/p&gt;
+&lt;p&gt;IN
+comm
+intra-communicator (handle)&lt;/p&gt;
+&lt;p&gt;OUT
+baseptr
+address of local allocated window segment (choice)&lt;/p&gt;
+&lt;p&gt;OUT
+win
+window object (handle)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这里分配的内存是连续的并且是根据内存的秩（rank）排的，除非你在&lt;code&gt;info&lt;/code&gt;里指定了&lt;code&gt;alloc_shared_noncontig&lt;/code&gt;。如果你指定了这个参数，那么库会优化共享内存碎片的布局，可能会优化性能。&lt;/p&gt;
+&lt;p&gt;如果使用了连续内存，那么只有第一个进程的内存会被对齐。如果没用，那么每一个进程的内存都会被对齐。&lt;/p&gt;
+&lt;h2 id="通信"&gt;通信
+&lt;/h2&gt;&lt;p&gt;所有的通信函数都是非阻塞的。&lt;/p&gt;
+&lt;p&gt;当源进程调用了一个同步过程或一个刷新过程时，操作结束。基于请求的操作会在源进程使用测试或等待（test or wait 我也不知道这是啥）过程时完成。&lt;/p&gt;
+&lt;p&gt;对于本地通信缓冲区的RMA操作只有在上一个操作结束后才会开始。&lt;/p&gt;
+&lt;p&gt;对于同一块内存的读写冲突会带来位置后果。但是同时的累加操作会顺利进行就好像他们是有序的一样。&lt;/p&gt;
+&lt;p&gt;你可以将&lt;code&gt;MPI_PROC_NULL&lt;/code&gt;作为目标，但是依旧会用同步方法来关闭这个时期（epoch）&lt;/p&gt;
+&lt;h2 id="内存模型"&gt;内存模型
+&lt;/h2&gt;&lt;p&gt;在理解内存模型前，先提出两个概念：公有内存和私有内存。我们假设公有内存是所有进程都可以访问的内存，容量大。私有内存是每个进程独有的内存，访问快。对于不同的机器，这两块内存可能是一致的，也可能不是。一致的内存布局允许我们直接更新公有内存。而不一致的内存需要额外的RMA操作来更新公有内存。因此针对这两种情况，MPI提出了两种内存模型，分别为&lt;strong&gt;RMA unified&lt;/strong&gt;和&lt;strong&gt;RMA separate&lt;/strong&gt;，可以通过&lt;code&gt;MPI_WIN_MODEL&lt;/code&gt;来设置。&lt;/p&gt;
+&lt;h3 id="separate-model"&gt;separate model
+&lt;/h3&gt;&lt;p&gt;在这种模型中，每个变量在进程内存里都只有一个实例，但是对于每个窗口而言都有多个公有备份。对于本地内存的更新操作会影响到其他窗口的公有备份。对于私有备份的更新操作也会影响到进程内存。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.1.png"
+width="872"
+height="552"
+srcset="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.1_hu_75950ab0631c44ff.png 480w, https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.1_hu_a85944c912ac9a04.png 1024w"
+loading="lazy"
+alt="seprate model"
+class="gallery-image"
+data-flex-grow="157"
+data-flex-basis="379px"
+&gt;&lt;/p&gt;
+&lt;h3 id="unified-model"&gt;unified model
+&lt;/h3&gt;&lt;p&gt;私有和公有拷贝是相同的，不需要额外的RMA操作，允许用户忽略一些同步调用并隐形的提高性能。&lt;/p&gt;
+&lt;p&gt;需要架构上的支持。&lt;/p&gt;
+&lt;h2 id="同步"&gt;同步
+&lt;/h2&gt;&lt;p&gt;RMA模型把通信分为了两种类型，如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;active target communication&lt;/strong&gt; 直译就是积极通信，在这种通信模式下，源进程和目标进程都会显式参与通信，通信方法分别为&lt;code&gt;fence&lt;/code&gt; 和 &lt;code&gt;SPCW&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;passive target communication&lt;/strong&gt; 消极通信，这种模式下只有源进程会显示的参与通信，通信方法为&lt;code&gt;lock&lt;/code&gt; 和 &lt;code&gt;lock_all&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id="时期epoch"&gt;时期（epoch）
+&lt;/h3&gt;&lt;p&gt;在介绍同步之前，先介绍时期这个概念。RMA模型中所有的通信操作都必须在一个时期中进行。需要目标进程通过同步操作来暴露时期（exposure epoch）和源进程也需要一个同步操作来访问时期（access epoch）。&lt;/p&gt;
+&lt;h3 id="pscwpost-start-complete-wait"&gt;PSCW(Post-Start-Complete-Wait)
+&lt;/h3&gt;&lt;p&gt;PSCW分别是四个不同的操作，目标进程使用Post的操作等价于打开一个暴露时期，而Wait等价于关闭这个暴露时期。源进程的Start则是打开一个访问时期，Complete 为关闭访问时期。
+其具体流程用标准的一张图即可解释：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.2.png"
+width="920"
+height="839"
+srcset="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.2_hu_d99f38c506ce9c9d.png 480w, https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.2_hu_8fe1fd5a75583b05.png 1024w"
+loading="lazy"
+alt="12.2"
+class="gallery-image"
+data-flex-grow="109"
+data-flex-basis="263px"
+&gt;&lt;/p&gt;
+&lt;p&gt;这种post必须在start前，wait必须在complete后的模式称之为强同步（strong synchronization）。但是强同步一般太理想化，所以如果不遵循这个顺序的情况，称此为弱同步（weak synchronization）。如下图&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.3.png"
+width="914"
+height="729"
+srcset="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.3_hu_52c16686ab1de9b6.png 480w, https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.3_hu_c3274dbbceac6eea.png 1024w"
+loading="lazy"
+alt="12.3"
+class="gallery-image"
+data-flex-grow="125"
+data-flex-basis="300px"
+&gt;&lt;/p&gt;
+&lt;p&gt;MPI允许弱同步模式。&lt;/p&gt;
+&lt;h3 id="fence"&gt;Fence
+&lt;/h3&gt;&lt;p&gt;如果是在BSP范式下，编写PSCW显然十分封锁，但是我们还有另一个法宝——Fence！其差别和对比也可以用一张图来很好的表示（出自一位大牛的paper）&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/5.png"
+width="1249"
+height="435"
+srcset="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/5_hu_98a6b87af336df14.png 480w, https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/5_hu_2a8d92a6d65355c0.png 1024w"
+loading="lazy"
+alt="5"
+class="gallery-image"
+data-flex-grow="287"
+data-flex-basis="689px"
+&gt;&lt;/p&gt;
+&lt;h3 id="lock"&gt;Lock
+&lt;/h3&gt;&lt;p&gt;这里的锁和我们一般在多线程中的锁很像，但是lock操作等同于打开一个时期，并不会建立一个临界区！锁分为排他的（exculsive）和共享的（shared）。排他锁同时之会允许一个进程访问，而共享锁允许其他持有共享锁的进程访问目标进程。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.4.png"
+width="912"
+height="908"
+srcset="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.4_hu_edd053ebf4480177.png 480w, https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/12.4_hu_587a3637c8484a22.png 1024w"
+loading="lazy"
+alt="12.4"
+class="gallery-image"
+data-flex-grow="100"
+data-flex-basis="241px"
+&gt;&lt;/p&gt;
+&lt;p&gt;注意，两个源进程的顺序是不确定的！&lt;/p&gt;
+&lt;p&gt;如果使用锁，那么在时期内的所有RMA操作只会在解锁的时候完成，所以RMA在提供锁的同时，也提供了Flush操作，用来同步用。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/6.png"
+width="1212"
+height="443"
+srcset="https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/6_hu_8688fee7a87193f6.png 480w, https://woodman3.github.io/p/mpi%E7%9A%84rma%E6%9C%BA%E5%88%B6%E7%AC%94%E8%AE%B0/6_hu_c9892e7265bb1fc1.png 1024w"
+loading="lazy"
+alt="6"
+class="gallery-image"
+data-flex-grow="273"
+data-flex-basis="656px"
+&gt;&lt;/p&gt;
+&lt;h2 id="参考"&gt;参考
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a class="link" href="https://htor.inf.ethz.ch/publications/img/MPI_RMA_and_advanced_MPI.pdf" target="_blank" rel="noopener"
+&gt;eth_pdf&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://enccs.github.io/intermediate-mpi/one-sided-routines/" target="_blank" rel="noopener"
+&gt;enccs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://htor.inf.ethz.ch/publications/img/mpi3-rma-overview-and-model.pdf" target="_blank" rel="noopener"
+&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://wgropp.cs.illinois.edu/courses/cs598-s16/lectures/lecture34.pdf" target="_blank" rel="noopener"
+&gt;wgropp.34&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://wgropp.cs.illinois.edu/courses/cs598-s16/lectures/lecture35.pdf" target="_blank" rel="noopener"
+&gt;wgropp.35&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf" target="_blank" rel="noopener"
+&gt;mpi-standard&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>自定义MPI的错误处理函数</title><link>https://woodman3.github.io/p/%E8%87%AA%E5%AE%9A%E4%B9%89mpi%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/</link><pubDate>Tue, 25 Jun 2024 15:24:09 +0800</pubDate><guid>https://woodman3.github.io/p/%E8%87%AA%E5%AE%9A%E4%B9%89mpi%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/</guid><description>&lt;img src="https://woodman3.github.io/p/%E8%87%AA%E5%AE%9A%E4%B9%89mpi%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/119764162_p0.png" alt="Featured image of post 自定义MPI的错误处理函数" /&gt;&lt;p&gt;MPI的标准中认为标准规定的数据的传输都是可靠传输，不需要规定如何处理错误，有些实现可能会有不可靠传输机制，错误的处理就由具体的实现来处理。但是各种由于其他方面引起的错误依旧客观存在，所以标准中依旧规定了一些错误码的种类并且允许用户自己实现错误处理。&lt;/p&gt;
+&lt;p&gt;前排提醒，文中的所以函数只是标准中约定的函数，实际需要调用的函数根据所使用的语言可能有所不同，请以标准和实现为准。&lt;/p&gt;
+&lt;h2 id="error-handing"&gt;Error Handing
+&lt;/h2&gt;&lt;p&gt;MPI中用户可自定义的错误处理函数可以分为四种类型，分别为&lt;code&gt;Communicator&lt;/code&gt; &lt;code&gt;Windows&lt;/code&gt; &lt;code&gt;Files&lt;/code&gt; &lt;code&gt;Sessions&lt;/code&gt;。其错误发生的操作和所调用的函数之间的关系如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://woodman3.github.io/p/%E8%87%AA%E5%AE%9A%E4%B9%89mpi%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/MPI_Error_invoke.png"
+width="1069"
+height="700"
+srcset="https://woodman3.github.io/p/%E8%87%AA%E5%AE%9A%E4%B9%89mpi%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/MPI_Error_invoke_hu_c1ebeecb0d36e33e.png 480w, https://woodman3.github.io/p/%E8%87%AA%E5%AE%9A%E4%B9%89mpi%E7%9A%84%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0/MPI_Error_invoke_hu_53cefd5498dd62c4.png 1024w"
+loading="lazy"
+alt="hander_invoke"
+class="gallery-image"
+data-flex-grow="152"
+data-flex-basis="366px"
+&gt;&lt;/p&gt;
+&lt;p&gt;MPI还提供了三种错误处理函数，如下&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;MPI_ERRORS_ARE_FATAL&lt;/strong&gt; 调用它会终止所有的进程，等效于一个有着所有进程的通讯器调用MPI_ABORT，且MPI_ABORT的错误码都是由实现指定的。（这里可能读起来有点拗口，但是笔者不太会翻译英语长句，可以参考具体标准文档）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MPI_ERRORS_ABORT&lt;/strong&gt; 如果在Session内调用，之会在本地进程内终止。在其他情况下会终止其相关通信器的进程。其错误码也是由具体实现指定。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MPI_ERRORS_RETURN&lt;/strong&gt; 返回错误码，但是不做其他事。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;实现一般会提供其他错误处理函数。但是在一般情况下，&lt;code&gt;MPI_ERRORS_ARE_FATAL&lt;/code&gt;是默认的错误处理函数。&lt;/p&gt;
+&lt;p&gt;用户可以使用 &lt;code&gt;MPI_XXX_CREATE_ERRHANDLER&lt;/code&gt; &lt;code&gt;MPI_XXX_SET_ERRHANDLER&lt;/code&gt; &lt;code&gt;MPI_XXX_GET_ERRHANDLER&lt;/code&gt; &lt;code&gt;MPI_XXX_FREE_ERRHANDLER&lt;/code&gt; 来创建、设置、获取和释放回调函数，其中 &lt;code&gt;XXX&lt;/code&gt; 为&lt;code&gt;COMM&lt;/code&gt; &lt;code&gt;WIN&lt;/code&gt; &lt;code&gt;FILE&lt;/code&gt; 或 &lt;code&gt;SESSION&lt;/code&gt;。值得注意的是，回调函数在MPI里是一个不透明对象，对于用户而言是不可见的，只能用句柄来访问。&lt;/p&gt;
+&lt;h2 id="error-code-and-class"&gt;Error code and class
+&lt;/h2&gt;&lt;p&gt;有关错误码具体含义完全由具体实现来决定，除了&lt;code&gt;MPI_SUCCESS&lt;/code&gt;，他的值默认为0，含义显而易见。&lt;/p&gt;
+&lt;p&gt;尽管标准没有给出具体的错误码，但是便准由一系列错误类（Error Class），规定了不同种类的错误。或者说，错误类就是最基础的错误码。一个错误码可能属于不同的错误类，可以使用 &lt;code&gt;MPI_ERROR_CLASS&lt;/code&gt; 来把错误码和错误类关联起来。所以错误码需要遵循以下约束：&lt;/p&gt;
+$$
+0 = MPI\_SUCCESS &lt; MPI\_T\_ERR\_XXX \leq MPI\_ERR\_LASTCODE
+$$&lt;h2 id="如何做呢"&gt;如何做呢
+&lt;/h2&gt;&lt;p&gt;那么在MPI中处理错误，我们已经有了一个清晰的路线：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;自己定义一个错误类。&lt;/li&gt;
+&lt;li&gt;把你想要错误码和错误类关联起来。&lt;/li&gt;
+&lt;li&gt;给你的错误吗添加描述。&lt;/li&gt;
+&lt;li&gt;移除联系（标准是这么写的，移除啥联系标准也没说，我认为是默认的错误处理函数与你定义的通信器之间的联系）&lt;/li&gt;
+&lt;li&gt;使用你自己的错误处理函数。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="参考"&gt;参考
+&lt;/h2&gt;&lt;p&gt;&lt;a class="link" href="https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf" target="_blank" rel="noopener"
+&gt;mpi-standard&lt;/a&gt;&lt;/p&gt;</description></item><item><title>MPI4.1标准的一些相关术语</title><link>https://woodman3.github.io/p/mpi4.1%E6%A0%87%E5%87%86%E7%9A%84%E4%B8%80%E4%BA%9B%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD/</link><pubDate>Mon, 24 Jun 2024 10:44:44 +0800</pubDate><guid>https://woodman3.github.io/p/mpi4.1%E6%A0%87%E5%87%86%E7%9A%84%E4%B8%80%E4%BA%9B%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD/</guid><description>&lt;img src="https://woodman3.github.io/p/mpi4.1%E6%A0%87%E5%87%86%E7%9A%84%E4%B8%80%E4%BA%9B%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD/119071465_p0.png" alt="Featured image of post MPI4.1标准的一些相关术语" /&gt;&lt;h2 id="程序规范"&gt;程序规范
+&lt;/h2&gt;&lt;p&gt;在标准中对于参数的说明有三种类型，如下：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;IN&lt;/strong&gt; 仅使用但不更新&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;OUT&lt;/strong&gt; 仅更新但不使用&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;INOUT&lt;/strong&gt; 皆有&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这个说明仅仅是只是告诉你参数会被如何使用，但是并不会强制落实到具体的实现上。&lt;/p&gt;
+&lt;p&gt;在这先提一嘴，MPI中有一类不透明类型，被称之为&lt;code&gt;opaque type&lt;/code&gt;。指的是无法被用户直接访问，只能通过句柄访问，其大小和形状对用户不可见的类型，如&lt;code&gt;groups&lt;/code&gt; &lt;code&gt;datatypes&lt;/code&gt; &lt;code&gt;communicators&lt;/code&gt;等。如果一个不透明类型被作为参数，那么他的参数说明为OUT或INOUT，哪怕其句柄并未被更新。&lt;/p&gt;
+&lt;p&gt;如果一个参数在一个进程中为IN，但是在另一个线程中为OUT，那么他的类型说明为INOUT。&lt;/p&gt;
+&lt;p&gt;如果参数说明为OUT或INOUT，那么这个参数不能有其他别名（或者说其他指针？），如标准指出以下程序是不被允许的。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;copyIntBuffer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pin&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pout&lt;/span&gt; &lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;len&lt;/span&gt;&lt;span class="p"&gt;){&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;len&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pout&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;pin&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;];&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nf"&gt;copyIntBuffer&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;7&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="c1"&gt;// it is forbidden
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="术语"&gt;术语
+&lt;/h2&gt;&lt;p&gt;在标准中，&lt;code&gt;message data bufferr&lt;/code&gt;为进程中接受者或收发者的缓冲区，&lt;code&gt;file data buffer&lt;/code&gt;为MPI的I/O程序建立的缓冲区，&lt;code&gt;data buffer&lt;/code&gt;的语义为两者之一，具体情况具体分析。&lt;/p&gt;
+&lt;h3 id="mpi操作mpi-operation"&gt;MPI操作（MPI Operation）
+&lt;/h3&gt;&lt;p&gt;一个MPI操作是由MPI库函数所构成的一系列数据传输或同步操作，由四个步骤组成。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;初始化（Initialization）接受参数表但不会动缓冲区里数据。&lt;/li&gt;
+&lt;li&gt;启动（starting）接受缓冲区的控制权。注意，一般初始操作（initiation）包括了前两个步骤。&lt;/li&gt;
+&lt;li&gt;完成（Completion）返回缓冲区的控制权并告知参数已经更新完成。注意，一个MPI操作只有在实行了这个阶段才能算完成（complete）。&lt;/li&gt;
+&lt;li&gt;释放（Freeing）返回剩下参数表的控制权。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;MPI操作分为形式，分别为阻塞（Blocking），非阻塞（Nonblocking）和持久（Persistent），区别如下：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阻塞操作&lt;/strong&gt;：四个阶段全在一个过程调用（Procedure call）里。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;非阻塞操作&lt;/strong&gt;：前两个阶段在一个非阻塞过程调用里，而后两个阶段在另一个阻塞或非阻塞的过程调用里。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;持久操作&lt;/strong&gt;：每个阶段都在一个单独的过程里，过程为阻塞或非阻塞。
+划开一个发送操作，在开始阶段结束时会有一个额外的调用来启动每一部分的接收者缓存。
+划开一个接收操作，在操作结束前会允许用户访问接受缓存来确认数据是否正确接受。（这一部分有些怪，但是标准文档就是这么写的）&lt;/p&gt;
+&lt;p&gt;开始阶段也被称为激活阶段（active），初始化和完全阶段也被称为失活阶段（inactive，我不知道如何翻译，姑且就这么叫好了）。&lt;/p&gt;
+&lt;p&gt;激活通信和I/O操作也被称之为挂起（pending）操作，注意到一个挂起操作可以是一个开始但还没完成的持久或非阻塞操作，抑或是一个还未完成的阻塞操作（比如一个正在等待信息的接受操作）&lt;/p&gt;
+&lt;p&gt;从另一个角度，操作也可以分为群体通信或非群体通信&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;群体操作&lt;/strong&gt;：一个群中的一个进程或一群进程而言，操作会也可能不会在群的所有进程开始前完成（挺拗口）。可能是阻塞、非阻塞或持久操作。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;非群体操作&lt;/strong&gt;：上述的补集。&lt;/p&gt;
+&lt;p&gt;有时一个操作在需要其他相关操作启动了才可以完成，比如一个接收操作需要发送操作启动了才能完成。这个现象被称之为使能（enabled）。但是有些mpi的实现会把使能优化，让一个操作在使能前就完成了。&lt;/p&gt;
+&lt;p&gt;有些操作是先验使能（pirori enabled）的，比如一个缓存发送操作不需要接受操作启动即可完成。&lt;/p&gt;
+&lt;p&gt;一旦一个操作是使能的，那么这个操作必须完成。一个操作可能在启动阶段前就已经是使能的了。比如接收操作。&lt;/p&gt;
+&lt;p&gt;使能的要求是不对称的，一个操作可能需要他所有相关的操作都完成了启动，但是自己却不一定需要启动。&lt;/p&gt;
+&lt;h3 id="mpi过程mpi-procedure"&gt;MPI过程（MPI Procedure)
+&lt;/h3&gt;&lt;p&gt;过程也可以分为两种，如下所示：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;非本地（Nonlocal）&lt;/strong&gt;：过程需要其他相关的过程在另一个进程中被调用才能返回，那么称之为非本地的。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;本地（Local）&lt;/strong&gt;：上述补集&lt;/p&gt;
+&lt;h2 id="参考"&gt;参考
+&lt;/h2&gt;&lt;p&gt;&lt;a class="link" href="https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf" target="_blank" rel="noopener"
+&gt;mpi-standard&lt;/a&gt;&lt;/p&gt;</description></item><item><title>std::excution介绍及其在nvidia gpu中的使用</title><link>https://woodman3.github.io/p/stdexcution%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%85%B6%E5%9C%A8nvidia-gpu%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Sun, 23 Jun 2024 19:46:35 +0800</pubDate><guid>https://woodman3.github.io/p/stdexcution%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%85%B6%E5%9C%A8nvidia-gpu%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;img src="https://woodman3.github.io/p/stdexcution%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%85%B6%E5%9C%A8nvidia-gpu%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/119683453_p0.jpg" alt="Featured image of post std::excution介绍及其在nvidia gpu中的使用" /&gt;&lt;h1 id="文前"&gt;文前
+&lt;/h1&gt;&lt;p&gt;老板叫我去查查标准库离有没有类似openmp那种并行方法，在查阅了相关资料后冰箱老板汇报后，这个方法并没有被采用。我把在此期间所查的资料整理于此作为知识备份，以便日后查阅使用。&lt;/p&gt;
+&lt;p&gt;值得一提的是，笔者并没有实际编写或执行过相应的代码，所以本文仅供参考，一切以实际为准。如有错误，烦请指出。&lt;/p&gt;
+&lt;h1 id="标准库"&gt;标准库
+&lt;/h1&gt;&lt;p&gt;在cpp17中，标准库中增加了&lt;code&gt;std::execution&lt;/code&gt;，并引入了执行策略（&lt;code&gt;execution_policy&lt;/code&gt;），粗略来说，一些执行策略可以使一部分算法和循环操作并行运行并自动向量化。以下为四种执行策略类型（最后一种是cpp20引入的）&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;std::execution::sequenced_policy&lt;/code&gt;
+最基本的串行策略，不表。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::parallel_policy&lt;/code&gt;
+并行策略，类似openmp的并行化操作，值得一提的是，线程的执行顺序是不确定的。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::parallel_unsequenced_policy&lt;/code&gt;
+同上，但是明确指出了循环顺序不确定，指示编译器可以向量化。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::unsequenced_policy&lt;/code&gt;
+不会进行并行操作，但是指示编译器可以向量化&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果使用并行化策略，那么线程安全是由程序员自己负责的。&lt;/p&gt;
+&lt;p&gt;值得一提的是，我们传入算法的执行策略并不是一个类型，而是一个实例，标准库并没有告诉我们如何创建一个实例，只是提供了以上四种类型所对应的实例，如下所示。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;std::execution::seq&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::par&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::par_unseq&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::unseq&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果想使用执行策略，常见的话可以在&lt;code&gt;for_each&lt;/code&gt;和&lt;code&gt;for_each_n&lt;/code&gt;中的第一个参数中传入执行策略。如果你需要规约和扫描操作，可以在&lt;code&gt;reduce&lt;/code&gt;和&lt;code&gt;inclusive_scan&lt;/code&gt;中使用即可。事实上，大部分&lt;a class="link" href="https://zh.cppreference.com/w/cpp/header/algorithm" target="_blank" rel="noopener"
+&gt;algorithm&lt;/a&gt;中和&lt;a class="link" href="https://zh.cppreference.com/w/cpp/header/numeric" target="_blank" rel="noopener"
+&gt;numeric&lt;/a&gt;的算法都是允许传入执行策略的。&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://zh.cppreference.com/w/cpp/algorithm/execution_policy_tag" target="_blank" rel="noopener"
+&gt;cppreference&lt;/a&gt;中暗示以后可能会有更丰富的策略（比如&lt;code&gt;std::parallel::cuda&lt;/code&gt; 和 &lt;code&gt;std::parallel::opencl&lt;/code&gt;）。但是笔者对此抱有怀疑态度。&lt;/p&gt;
+&lt;p&gt;涉及到执行策略的两篇主要提案，分别是&lt;a class="link" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p2300r9.html#design-schedulers" target="_blank" rel="noopener"
+&gt;P2300R9&lt;/a&gt;和&lt;a class="link" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p0443r14.html" target="_blank" rel="noopener"
+&gt;P0443R14&lt;/a&gt;。其中前者是对后者更近一步的意见。笔者想在其中找到关于如何管理调度策略和管理并行资源的更近一步的资料，由于时间关系，我只看了前一篇，但奈何是在太长太长，而且其中大部分都是在谈&lt;code&gt;sender&lt;/code&gt;和&lt;code&gt;recevier&lt;/code&gt;机制，和老板要求没啥关系，而提案中关于我想要的部分仅仅只有一&lt;a class="link" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p2300r9.html#design-schedulers" target="_blank" rel="noopener"
+&gt;小部分&lt;/a&gt;,没有更进一步的尝试，所以我只能就此作罢。&lt;/p&gt;
+&lt;h1 id="gpu上并行"&gt;gpu上并行
+&lt;/h1&gt;&lt;p&gt;那么标准库里的方法可不可以把线程放进gpu中执行呢，就像opanacc那样？答案是可以的，但是目前笔者查到的相关资料仅限于nvidia的gpu，至于另外两家我就不知道了。想要在gpu上并行可以使用nvidia的nvc++编译器，在编译选项中加上&lt;code&gt;-stdpar&lt;/code&gt;即可，编译器会自动完成其中的操作。其中要注意的点如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;只支持前三种策略，其中使用第一种不会进行并行化。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主机和设备之间的数据移动是自动进行的，但是移动方式又有两种方式，分别为Managed Memory Mode和Unified Memory Mode，具体区别可以参考&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#acc-mem-unified" target="_blank" rel="noopener"
+&gt;这里&lt;/a&gt;，粗略来说，前者是由程序手动完成数据移动，而后者是硬件上有一块cpu和gpu都可以访问的内存。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果你不想引入额外的数据传输开销，就不要在&lt;a class="link" href="https://developer.nvidia.com/blog/multi-gpu-programming-with-standard-parallel-c-part-2/#do_not_touch_data_on_the_cpu" target="_blank" rel="noopener"
+&gt;cpu部分的代码碰数据&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果想要多卡运算，需要与MPI结合&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;申请内存是不需要&lt;code&gt;__device__&lt;/code&gt;之类的指示符的&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;尽管使用正常编写cpp方式来分配内存就好了，但是如果想要更快的效率，可以考虑使用&lt;a class="link" href="https://developer.nvidia.com/blog/multi-gpu-programming-with-standard-parallel-c-part-2/#communicate_through_pinned_memory" target="_blank" rel="noopener"
+&gt;pinned memory&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果使用Managed Memory Mode的话，循环内只能访问在堆上分配的内存，而不能访问在栈上分配的内存（全局变量也不可以）。因此&lt;code&gt;std::vector&lt;/code&gt;中的元素可以被访问，但是&lt;code&gt;std::array&lt;/code&gt;中的反而不行。Unified Memory Mode则没有这种限制。具体差别&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#stdpar-cpp-unified-memory" target="_blank" rel="noopener"
+&gt;在这&lt;/a&gt;，总体来说，推荐后一种方式。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;不能传入函数指针，只能传入lambda表达式，因为使用函数指针调用函数时会传入一个多态object，会调用虚表。（这里我也很疑惑，但是官网就是这么&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#stdpar-cpp-function-pointers" target="_blank" rel="noopener"
+&gt;写的&lt;/a&gt;）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;计算能力由编译器自动指定。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;除此之位，nvc++还支持不少很新的东西，比如多维数组，线性函数库，或者自己实现一个sender和receiver，可以在文档中查看。&lt;/p&gt;
+&lt;h1 id="参考"&gt;参考
+&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class="link" href="https://en.cppreference.com/w/cpp/header/execution" target="_blank" rel="noopener"
+&gt;cppreference&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#stdpar-use" target="_blank" rel="noopener"
+&gt;nvc++ pragram guide&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class="link" href="https://developer.nvidia.com/blog/multi-gpu-programming-with-standard-parallel-c-part-2/" target="_blank" rel="noopener"
+&gt;nvidia blog&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>cublas的gemv踩坑</title><link>https://woodman3.github.io/p/cublas%E7%9A%84gemv%E8%B8%A9%E5%9D%91/</link><pubDate>Mon, 13 May 2024 18:57:13 +0800</pubDate><guid>https://woodman3.github.io/p/cublas%E7%9A%84gemv%E8%B8%A9%E5%9D%91/</guid><description>&lt;img src="https://woodman3.github.io/p/cublas%E7%9A%84gemv%E8%B8%A9%E5%9D%91/112545261_p0.png" alt="Featured image of post cublas的gemv踩坑" /&gt;&lt;p&gt;gemv是我接触的第一个cublas function，然而由于cublas中矩阵是按列保存的，所以对于一个$ m*n$的按行保存的矩阵$A$，调用的正确姿势是&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;cublasSgemv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;CUBLAS_OP_T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可能是按列储存的原因，cublas的gemv效率相比于自己手写的kernel低不少，但是自己手写的kernel和cublas的可能有一定的精度差异&lt;/p&gt;</description></item></channel></rss>

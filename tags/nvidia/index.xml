@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nvidia on 木头人的小木屋</title><link>https://woodman3.github.io/tags/nvidia/</link><description>Recent content in Nvidia on 木头人的小木屋</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 23 Jun 2024 19:46:35 +0800</lastBuildDate><atom:link href="https://woodman3.github.io/tags/nvidia/index.xml" rel="self" type="application/rss+xml"/><item><title>std::excution介绍及其在nvidia gpu中的使用</title><link>https://woodman3.github.io/p/stdexcution%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%85%B6%E5%9C%A8nvidia-gpu%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/</link><pubDate>Sun, 23 Jun 2024 19:46:35 +0800</pubDate><guid>https://woodman3.github.io/p/stdexcution%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%85%B6%E5%9C%A8nvidia-gpu%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/</guid><description>&lt;img src="https://woodman3.github.io/p/stdexcution%E4%BB%8B%E7%BB%8D%E5%8F%8A%E5%85%B6%E5%9C%A8nvidia-gpu%E4%B8%AD%E7%9A%84%E4%BD%BF%E7%94%A8/119683453_p0.jpg" alt="Featured image of post std::excution介绍及其在nvidia gpu中的使用" /&gt;&lt;h1 id="文前"&gt;文前
+&lt;/h1&gt;&lt;p&gt;老板叫我去查查标准库离有没有类似openmp那种并行方法，在查阅了相关资料后冰箱老板汇报后，这个方法并没有被采用。我把在此期间所查的资料整理于此作为知识备份，以便日后查阅使用。&lt;/p&gt;
+&lt;p&gt;值得一提的是，笔者并没有实际编写或执行过相应的代码，所以本文仅供参考，一切以实际为准。如有错误，烦请指出。&lt;/p&gt;
+&lt;h1 id="标准库"&gt;标准库
+&lt;/h1&gt;&lt;p&gt;在cpp17中，标准库中增加了&lt;code&gt;std::execution&lt;/code&gt;，并引入了执行策略（&lt;code&gt;execution_policy&lt;/code&gt;），粗略来说，一些执行策略可以使一部分算法和循环操作并行运行并自动向量化。以下为四种执行策略类型（最后一种是cpp20引入的）&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;std::execution::sequenced_policy&lt;/code&gt;
+最基本的串行策略，不表。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::parallel_policy&lt;/code&gt;
+并行策略，类似openmp的并行化操作，值得一提的是，线程的执行顺序是不确定的。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::parallel_unsequenced_policy&lt;/code&gt;
+同上，但是明确指出了循环顺序不确定，指示编译器可以向量化。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::unsequenced_policy&lt;/code&gt;
+不会进行并行操作，但是指示编译器可以向量化&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果使用并行化策略，那么线程安全是由程序员自己负责的。&lt;/p&gt;
+&lt;p&gt;值得一提的是，我们传入算法的执行策略并不是一个类型，而是一个实例，标准库并没有告诉我们如何创建一个实例，只是提供了以上四种类型所对应的实例，如下所示。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;std::execution::seq&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::par&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::par_unseq&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;std::execution::unseq&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果想使用执行策略，常见的话可以在&lt;code&gt;for_each&lt;/code&gt;和&lt;code&gt;for_each_n&lt;/code&gt;中的第一个参数中传入执行策略。如果你需要规约和扫描操作，可以在&lt;code&gt;reduce&lt;/code&gt;和&lt;code&gt;inclusive_scan&lt;/code&gt;中使用即可。事实上，大部分&lt;a class="link" href="https://zh.cppreference.com/w/cpp/header/algorithm" target="_blank" rel="noopener"
+&gt;algorithm&lt;/a&gt;中和&lt;a class="link" href="https://zh.cppreference.com/w/cpp/header/numeric" target="_blank" rel="noopener"
+&gt;numeric&lt;/a&gt;的算法都是允许传入执行策略的。&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://zh.cppreference.com/w/cpp/algorithm/execution_policy_tag" target="_blank" rel="noopener"
+&gt;cppreference&lt;/a&gt;中暗示以后可能会有更丰富的策略（比如&lt;code&gt;std::parallel::cuda&lt;/code&gt; 和 &lt;code&gt;std::parallel::opencl&lt;/code&gt;）。但是笔者对此抱有怀疑态度。&lt;/p&gt;
+&lt;p&gt;涉及到执行策略的两篇主要提案，分别是&lt;a class="link" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p2300r9.html#design-schedulers" target="_blank" rel="noopener"
+&gt;P2300R9&lt;/a&gt;和&lt;a class="link" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2020/p0443r14.html" target="_blank" rel="noopener"
+&gt;P0443R14&lt;/a&gt;。其中前者是对后者更近一步的意见。笔者想在其中找到关于如何管理调度策略和管理并行资源的更近一步的资料，由于时间关系，我只看了前一篇，但奈何是在太长太长，而且其中大部分都是在谈&lt;code&gt;sender&lt;/code&gt;和&lt;code&gt;recevier&lt;/code&gt;机制，和老板要求没啥关系，而提案中关于我想要的部分仅仅只有一&lt;a class="link" href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p2300r9.html#design-schedulers" target="_blank" rel="noopener"
+&gt;小部分&lt;/a&gt;,没有更进一步的尝试，所以我只能就此作罢。&lt;/p&gt;
+&lt;h1 id="gpu上并行"&gt;gpu上并行
+&lt;/h1&gt;&lt;p&gt;那么标准库里的方法可不可以把线程放进gpu中执行呢，就像opanacc那样？答案是可以的，但是目前笔者查到的相关资料仅限于nvidia的gpu，至于另外两家我就不知道了。想要在gpu上并行可以使用nvidia的nvc++编译器，在编译选项中加上&lt;code&gt;-stdpar&lt;/code&gt;即可，编译器会自动完成其中的操作。其中要注意的点如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;只支持前三种策略，其中使用第一种不会进行并行化。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;主机和设备之间的数据移动是自动进行的，但是移动方式又有两种方式，分别为Managed Memory Mode和Unified Memory Mode，具体区别可以参考&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#acc-mem-unified" target="_blank" rel="noopener"
+&gt;这里&lt;/a&gt;，粗略来说，前者是由程序手动完成数据移动，而后者是硬件上有一块cpu和gpu都可以访问的内存。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果你不想引入额外的数据传输开销，就不要在&lt;a class="link" href="https://developer.nvidia.com/blog/multi-gpu-programming-with-standard-parallel-c-part-2/#do_not_touch_data_on_the_cpu" target="_blank" rel="noopener"
+&gt;cpu部分的代码碰数据&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果想要多卡运算，需要与MPI结合&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;申请内存是不需要&lt;code&gt;__device__&lt;/code&gt;之类的指示符的&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;尽管使用正常编写cpp方式来分配内存就好了，但是如果想要更快的效率，可以考虑使用&lt;a class="link" href="https://developer.nvidia.com/blog/multi-gpu-programming-with-standard-parallel-c-part-2/#communicate_through_pinned_memory" target="_blank" rel="noopener"
+&gt;pinned memory&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果使用Managed Memory Mode的话，循环内只能访问在堆上分配的内存，而不能访问在栈上分配的内存（全局变量也不可以）。因此&lt;code&gt;std::vector&lt;/code&gt;中的元素可以被访问，但是&lt;code&gt;std::array&lt;/code&gt;中的反而不行。Unified Memory Mode则没有这种限制。具体差别&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#stdpar-cpp-unified-memory" target="_blank" rel="noopener"
+&gt;在这&lt;/a&gt;，总体来说，推荐后一种方式。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;不能传入函数指针，只能传入lambda表达式，因为使用函数指针调用函数时会传入一个多态object，会调用虚表。（这里我也很疑惑，但是官网就是这么&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#stdpar-cpp-function-pointers" target="_blank" rel="noopener"
+&gt;写的&lt;/a&gt;）&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;计算能力由编译器自动指定。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;除此之位，nvc++还支持不少很新的东西，比如多维数组，线性函数库，或者自己实现一个sender和receiver，可以在文档中查看。&lt;/p&gt;
+&lt;h1 id="参考"&gt;参考
+&lt;/h1&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class="link" href="https://en.cppreference.com/w/cpp/header/execution" target="_blank" rel="noopener"
+&gt;cppreference&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class="link" href="https://docs.nvidia.com/hpc-sdk/archive/24.5/compilers/hpc-compilers-user-guide/index.html#stdpar-use" target="_blank" rel="noopener"
+&gt;nvc++ pragram guide&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a class="link" href="https://developer.nvidia.com/blog/multi-gpu-programming-with-standard-parallel-c-part-2/" target="_blank" rel="noopener"
+&gt;nvidia blog&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description></item><item><title>cublas的gemv踩坑</title><link>https://woodman3.github.io/p/cublas%E7%9A%84gemv%E8%B8%A9%E5%9D%91/</link><pubDate>Mon, 13 May 2024 18:57:13 +0800</pubDate><guid>https://woodman3.github.io/p/cublas%E7%9A%84gemv%E8%B8%A9%E5%9D%91/</guid><description>&lt;img src="https://woodman3.github.io/p/cublas%E7%9A%84gemv%E8%B8%A9%E5%9D%91/112545261_p0.png" alt="Featured image of post cublas的gemv踩坑" /&gt;&lt;p&gt;gemv是我接触的第一个cublas function，然而由于cublas中矩阵是按列保存的，所以对于一个$ m*n$的按行保存的矩阵$A$，调用的正确姿势是&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="n"&gt;cublasSgemv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;handle&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;CUBLAS_OP_T&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;m&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;A&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;beta&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;y2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可能是按列储存的原因，cublas的gemv效率相比于自己手写的kernel低不少，但是自己手写的kernel和cublas的可能有一定的精度差异&lt;/p&gt;</description></item></channel></rss>
