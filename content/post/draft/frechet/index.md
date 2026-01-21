@@ -70,5 +70,47 @@ $$
 则称 $f$ 在 $x$ 处 Gateaux 可导，记 $A = f'_G(x)$，称为 Gateaux 微分。  
 等价地，对每个固定的 $h$，导数 $D_h f(x) = \left. \frac{d}{dt} f(x+th) \right|_{t=0}$ 存在且是 $h$ 的线性连续映射。
 
-看着舒服多了，至少有求的方式。
+看着舒服多了，至少能知道怎么求。下面我们用这个法子来求前文提到的导数。
 
+## 行列式的Gateaux导数
+
+我们有
+$$
+DJ(A)[H] = \lim_{t \to 0} \frac{J(A+tH)-J(A)}{t}
+$$
+
+其中
+$$
+J(A+tH) = J(A)J(I+tA^{-1}H)
+$$
+令$C=A^{-1}H$ 假设$C$的特征值为$\lambda_i$，那么显然$I+tC$的特征值为$1+t\lambda_i$
+
+又
+$$
+J(C)=\prod_{i=1}^n \lambda 
+$$
+则
+$$
+\begin{align}
+J(I+tC) &= \prod_{i=1}^n 1+t \lambda_i \\
+&=1+t\sum_i\lambda_i+O(t^2)\\
+&=1+t\mathrm{tr}(C) + O(t^2)
+\end{align}
+$$
+又有
+$$
+\mathrm{tr}(AB) =A^T : B
+$$
+回到原式
+$$
+\begin{align}
+\lim_{t \to 0} \frac{J(A+tH)-J(A)}{t} &= J(A)*\mathrm{tr}(C)\\
+&=J(A)*\mathrm{tr}(A^{-1}H)\\
+&=J(A) A^{-T}:H
+
+\end{align}
+$$
+和前面求的差不多，就是多了一个$H$，他的作用就像二阶导数中的方向，这也告诉我们，Gateaux导数得到的是一个映射，输入一个方向（或者叫扰动量），得到对应的导数，记住这个概念，后面链式法则要用。
+
+## 链式法则
+叠甲：本文不考虑不可导的情况。严谨的证明留给专门的人来做，我们只介绍如何计算。
