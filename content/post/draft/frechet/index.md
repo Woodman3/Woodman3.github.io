@@ -10,8 +10,6 @@ comments: true
 draft: true
 ---
 
-
-
 ## 引
 
 假设我们需要对这个函数求导
@@ -29,7 +27,6 @@ $$
 $$
 J(A) = \sum_k^na_{ik}c_{ik}
 $$
-
 
 其中 $c_{ik}$ 是 $a_{ik}$的代数余子式
 
@@ -87,30 +84,59 @@ $$
 
 又
 $$
-J(C)=\prod_{i=1}^n \lambda 
+J(C)=\prod_{i=1}^n \lambda
 $$
 则
 $$
-\begin{align}
+\begin{aligned}
 J(I+tC) &= \prod_{i=1}^n 1+t \lambda_i \\
 &=1+t\sum_i\lambda_i+O(t^2)\\
 &=1+t\mathrm{tr}(C) + O(t^2)
-\end{align}
+\end{aligned}
 $$
 又有
 $$
 \mathrm{tr}(AB) =A^T : B
 $$
+
 回到原式
+
 $$
-\begin{align}
+\begin{aligned}
 \lim_{t \to 0} \frac{J(A+tH)-J(A)}{t} &= J(A)*\mathrm{tr}(C)\\
 &=J(A)*\mathrm{tr}(A^{-1}H)\\
 &=J(A) A^{-T}:H
-
-\end{align}
+\end{aligned}
 $$
+
 和前面求的差不多，就是多了一个$H$，他的作用就像二阶导数中的方向，这也告诉我们，Gateaux导数得到的是一个映射，输入一个方向（或者叫扰动量），得到对应的导数，记住这个概念，后面链式法则要用。
 
 ## 链式法则
-叠甲：本文不考虑不可导的情况。严谨的证明留给专门的人来做，我们只介绍如何计算。
+
+叠甲：本文不考虑不可导的情况。严谨的证明留给专门的人来做，我只介绍如何计算。
+
+设 $X, Y, Z$ 是赋范空间，$U \subset X$，$V \subset Y$，  
+$g: U \to V$ 在 $x$ 处 Gateaux 可导，  
+$f: V \to Z$ 在 $y = g(x)$ 处 Fréchet 可导。  
+那么复合函数 $h = f \circ g$ 在 $x$ 处 Gateaux 可导，且  
+$$
+D_h(x) = Df(g(x)) \circ Dg(x),
+$$
+这里 $Dg(x)$ 是 $g$ 在 $x$ 处的 Gateaux 导数（线性算子），$Df(y)$ 是 $f$ 在 $y$ 处的 Fréchet 导数。
+
+这个看上去和高中时学的链式法则还挺像的，区别就是中间的乘号变成了一个圆圈。现在我们来求另一个简单的导数$\partial W/\partial F$：
+
+$$
+W(C) = det(C),C=F^TF
+$$
+显然
+$$
+DC(F)[H] = F^TH + H^TF
+$$
+那么
+$$
+\begin{aligned}
+D_H(F)&=det(C)C^{-T} :(F^TH + H^TF) \\
+&=2det(F)F^{-1}F^{-T} : (F^TH + H^TF) 
+\end{aligned}
+$$
