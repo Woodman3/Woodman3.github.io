@@ -1,5 +1,5 @@
 ---
-title: Frechet
+title: 使用Gateaux导数在矩阵相关计算中求导
 description:
 date: 2026-01-09T17:25:51+08:00
 image:
@@ -7,7 +7,7 @@ math: true
 license:
 hidden: false
 comments: true
-draft: true
+draft: false
 ---
 
 ## 引
