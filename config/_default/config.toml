@@ -3,7 +3,7 @@ enableGitInfo = true
 baseurl = "https://woodman3.github.io"
 languageCode = "en-us"
 
-title = "木头人的小木屋"
+title = "竹木吟"
 
 # Theme i18n support
 # Available values: en, fr, id, ja, ko, pt-br, zh-cn, zh-tw, es, de, nl, it, th, el, uk, ar

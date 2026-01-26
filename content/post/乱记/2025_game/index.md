@@ -11,6 +11,8 @@ draft: false
 tags:
   - 感
   - game
+categories:
+  - 乱记
 ---
 
 ## 神之天平
