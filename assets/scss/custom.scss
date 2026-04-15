@@ -1,9 +1,20 @@
-body {
-    background-image: url('https://s2.loli.net/2024/02/11/SsDb8MGi4H3QWC1.jpg');
-    background-size: cover; // 覆盖整个页面
-    background-position: center; // 图片居中显示
-    background-attachment: fixed;
-}
+// 博客背景图，效果不好，暂时放弃了
+// :root[data-scheme="dark"] {
+//   --bg-image: url("/100723659_p0.jpg");
+// }
+
+// :root[data-scheme="light"] {
+//   --bg-image: url("/121764304_p0.jpg");
+// }
+
+// body {
+//     // background-image: url('https://s2.loli.net/2024/02/11/SsDb8MGi4H3QWC1.jpg');
+//     background-image: var(--bg-image);
+//     // background-image: url("/121764304_p0.jpg");
+//     background-size: cover; // 覆盖整个页面
+//     background-position: center; // 图片居中显示
+//     background-attachment: fixed;
+// }
 
 //copy by https://lbqaq.top/p/%E7%BB%99blog%E5%A2%9E%E5%8A%A0%E5%8A%A8%E7%94%BB/
 :root {
@@ -65,12 +76,13 @@ body {
     img {
         //设置图片缩放
         transition: all .5s ease;
-        filter: blur(10px); // 默认模糊
+        // 增加模糊效果，悬停时清晰，已弃用
+        // filter: blur(10px); 
 
-        &:hover {
-            transform: scale(1.2);
-            filter: blur(0); // 悬停时清晰
-        }
+        // &:hover {
+        //     transform: scale(1.2);
+        //     filter: blur(0); // 悬停时清晰
+        // }
 
         @include respond(xl) {
             //加大图片高度
@@ -108,7 +120,7 @@ body {
 }
 
 .main {
-    max-width: 1000px; /* 你想要的宽度，可改为 px 或 % */
+    max-width: 1100px; /* 你想要的宽度，可改为 px 或 % */
     margin: 0 auto;    /* 居中显示 */
 }
 
