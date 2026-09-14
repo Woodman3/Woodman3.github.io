@@ -23,9 +23,15 @@ links:
     website: https://ccoskrnl.github.io/notes/
 
   - title: 浴沂咏归
-    image: https://ptpimg.me/qfb9ao.jpg
+    image: https://i.ibb.co/nsX2FsyV/1000.jpg
     website: https://zexwoo.blog
     description: ZexWoo’s Blog
+
+  - title: 小衢
+    image: https://github.com/StellarLane/StellarLane.github.io/blob/main/public/avatar.png?raw=true
+    website: https://stellarlane.github.io/
+    description: stellarlane
+
 
 menu:
     main: 
