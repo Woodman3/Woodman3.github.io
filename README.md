@@ -20,6 +20,22 @@ It comes with a basic theme structure and configuration. GitHub action has been 
 .\tweet.ps1 今天的风很舒服。
 ```
 
+## 新建博文草稿
+
+脚本会调用 Hugo 创建草稿：
+
+```powershell
+.\post.ps1 "我的新文章"
+```
+
+也可以直接运行脚本，再根据提示输入标题：
+
+```powershell
+.\post.ps1
+```
+
+草稿会创建为 `content/post/draft/我的新文章/index.md`，日期和文章配置均由 Hugo 生成，然后自动在编辑器中打开。图片等页面资源可以直接放进同一目录。
+
 ## Get started
 
 1. Click *Use this template*, and create your repository on GitHub.
