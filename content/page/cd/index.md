@@ -1,6 +1,7 @@
 ---
 title: "CD的购买和刻录记录"
 slug: "cd"
+layout: "disc"
 image: b391eb1913173f03507218ac227af1c91741301.jpg
 menu:
     main:

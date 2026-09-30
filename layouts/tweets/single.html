@@ -1,0 +1,40 @@
+{{ define "body-class" }}microblog-page micro-post-page{{ end }}
+
+{{ define "main" }}
+    <div class="microblog-shell">
+        <nav class="micro-post-back" aria-label="返回推文列表">
+            <a href="{{ (.Site.GetPage `/tweets`).RelPermalink }}">← 返回推文</a>
+        </nav>
+
+        <article class="micro-post micro-post--single">
+            <header class="micro-post-meta">
+                <time datetime="{{ .Date.Format `2006-01-02T15:04:05Z07:00` }}">
+                    {{ .Date.Format "2006年1月2日 15:04" }}
+                </time>
+                {{ with .Params.mood }}<span class="micro-post-mood">{{ . }}</span>{{ end }}
+            </header>
+
+            {{ with .Params.title }}
+                {{ if ne . "" }}<h1 class="micro-post-title">{{ . }}</h1>{{ end }}
+            {{ end }}
+
+            <div class="micro-post-content">
+                {{ .Content }}
+            </div>
+
+            {{ with .GetTerms "tags" }}
+                <footer class="micro-post-tags">
+                    {{ range . }}<a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a>{{ end }}
+                </footer>
+            {{ end }}
+        </article>
+
+        {{ if not (eq .Params.comments false) }}
+            {{ partial "comments/include" . }}
+        {{ end }}
+    </div>
+
+    {{ partialCached "footer/footer" . }}
+    {{ partialCached "article/components/photoswipe" . }}
+{{ end }}
+

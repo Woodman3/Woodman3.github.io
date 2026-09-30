@@ -1,5 +1,6 @@
 ---
 title: "友链"
+layout: "links"
 links:
   - title: narohaz
     image: https://avatars.githubusercontent.com/u/78553862?v=4

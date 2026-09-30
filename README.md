@@ -6,6 +6,20 @@ This is a quick start template for [Hugo theme Stack](https://github.com/CaiJimm
 
 It comes with a basic theme structure and configuration. GitHub action has been set up to deploy the theme to a public GitHub page automatically. Also, there's a cron job to update the theme automatically everyday.
 
+## 新建推文
+
+文件名会根据当前时间自动生成。新建并打开编辑：
+
+```powershell
+.\tweet.ps1
+```
+
+只有一句话时，也可以直接写在命令后面：
+
+```powershell
+.\tweet.ps1 今天的风很舒服。
+```
+
 ## Get started
 
 1. Click *Use this template*, and create your repository on GitHub.

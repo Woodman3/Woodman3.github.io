@@ -1,0 +1,57 @@
+{{ define "body-class" }}microblog-page{{ end }}
+
+{{ define "main" }}
+    {{ $pages := where .RegularPages "Params.hidden" "!=" true }}
+    <div class="microblog-shell">
+        <header class="microblog-header">
+            <div>
+                <h1>{{ .Title }}</h1>
+            </div>
+            <span class="microblog-count">{{ len $pages }} 条记录</span>
+        </header>
+
+        {{ $paginator := .Paginate $pages.ByDate.Reverse }}
+        {{ if gt (len $paginator.Pages) 0 }}
+            <section class="microblog-timeline" aria-label="推文时间线">
+                {{ range $paginator.Pages }}
+                    {{ $page := . }}
+                    <article class="micro-post">
+                        <span class="micro-post-dot" aria-hidden="true"></span>
+                        <header class="micro-post-meta">
+                            <a href="{{ .RelPermalink }}" aria-label="打开 {{ .Date.Format `2006年1月2日 15:04` }} 的记录">
+                                <time datetime="{{ .Date.Format `2006-01-02T15:04:05Z07:00` }}">
+                                    {{ .Date.Format "2006年1月2日 15:04" }}
+                                </time>
+                            </a>
+                            {{ with .Params.mood }}<span class="micro-post-mood">{{ . }}</span>{{ end }}
+                        </header>
+
+                        {{ with .Params.title }}
+                            {{ if ne . "" }}<h2 class="micro-post-title"><a href="{{ $page.RelPermalink }}">{{ . }}</a></h2>{{ end }}
+                        {{ end }}
+
+                        <div class="micro-post-content">
+                            {{ .Content }}
+                        </div>
+
+                        {{ with .GetTerms "tags" }}
+                            <footer class="micro-post-tags">
+                                {{ range . }}<a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a>{{ end }}
+                            </footer>
+                        {{ end }}
+                    </article>
+                {{ end }}
+            </section>
+            {{ partial "pagination.html" . }}
+        {{ else }}
+            <div class="microblog-empty">
+                <span aria-hidden="true">✦</span>
+                <p>还没有留下记录。</p>
+                <small>等某个值得记住的瞬间。</small>
+            </div>
+        {{ end }}
+    </div>
+
+    {{ partialCached "footer/footer" . }}
+{{ end }}
+

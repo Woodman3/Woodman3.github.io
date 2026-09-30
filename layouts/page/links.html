@@ -1,0 +1,47 @@
+{{ define "body-class" }}article-page links-page{{ end }}
+
+{{ define "main" }}
+    <div class="links-shell">
+        <header class="links-hero">
+            <div>
+                <h1>{{ .Title }}</h1>
+            </div>
+            <span class="links-count">{{ len .Params.links }} 位朋友</span>
+        </header>
+
+        <section class="friend-grid" aria-label="友情链接">
+            {{ range .Params.links }}
+                {{ $link := . }}
+                {{ $url := urls.Parse .website }}
+                <a class="friend-card" href="{{ .website }}" target="_blank" rel="noopener noreferrer">
+                    <div class="friend-avatar">
+                        {{ with .image }}
+                            <img src="{{ . }}" alt="{{ $link.title }} 的头像" loading="lazy">
+                        {{ else }}
+                            <span aria-hidden="true">✦</span>
+                        {{ end }}
+                    </div>
+                    <div class="friend-details">
+                        <h2>{{ .title }}</h2>
+                        {{ with .description }}<p>{{ . }}</p>{{ end }}
+                        <small>{{ $url.Host }}</small>
+                    </div>
+                    <span class="friend-arrow" aria-hidden="true">↗</span>
+                </a>
+            {{ end }}
+        </section>
+
+        <article class="links-info-card">
+            {{ partial "article/components/content" . }}
+        </article>
+
+        {{ if not (eq .Params.comments false) }}
+            <div class="links-comments">
+                {{ partial "comments/include" . }}
+            </div>
+        {{ end }}
+    </div>
+
+    {{ partialCached "footer/footer" . }}
+{{ end }}
+

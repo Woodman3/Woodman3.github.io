@@ -1,6 +1,7 @@
 ---
 title: "关于"
 slug: "about"
+layout: "about"
 menu:
     main:
         name: "About"

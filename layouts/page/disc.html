@@ -1,0 +1,56 @@
+{{ define "body-class" }}disc-page{{ end }}
+
+{{ define "main" }}
+    {{ $sections := split .RawContent "\n## " }}
+    {{ $records := after 1 $sections }}
+
+    <div class="disc-shell">
+        <header class="disc-hero">
+            <div class="disc-hero-copy">
+                <span class="disc-symbol" aria-hidden="true">♫</span>
+                <h1>{{ .Title }}</h1>
+                <div class="disc-stats">
+                    <span><strong>{{ len $records }}</strong> 张唱片</span>
+                </div>
+            </div>
+
+            {{ with .Resources.GetMatch .Params.image }}
+                {{ $cover := .Fill "480x480 Center" }}
+                <div class="disc-cover" aria-hidden="true">
+                    <div class="disc-vinyl"></div>
+                    <img src="{{ $cover.RelPermalink }}" width="{{ $cover.Width }}" height="{{ $cover.Height }}" alt="">
+                </div>
+            {{ end }}
+        </header>
+
+        <section class="disc-collection" aria-label="唱片收藏记录">
+            {{ range $index, $section := $records }}
+                {{ $lines := split $section "\n" }}
+                {{ $title := index $lines 0 }}
+                {{ $body := delimit (after 1 $lines) "\n" }}
+                <article class="disc-entry">
+                    <div class="disc-entry-index" aria-hidden="true">{{ printf "%02d" (add $index 1) }}</div>
+                    <div class="disc-entry-main">
+                        <header>
+                            <span class="disc-entry-groove" aria-hidden="true"></span>
+                            <h2>{{ $title }}</h2>
+                        </header>
+                        <div class="disc-entry-content">
+                            {{ $body | markdownify }}
+                        </div>
+                    </div>
+                </article>
+            {{ end }}
+        </section>
+
+        {{ if not (eq .Params.comments false) }}
+            <div class="disc-comments">
+                {{ partial "comments/include" . }}
+            </div>
+        {{ end }}
+    </div>
+
+    {{ partialCached "footer/footer" . }}
+    {{ partialCached "article/components/photoswipe" . }}
+{{ end }}
+
