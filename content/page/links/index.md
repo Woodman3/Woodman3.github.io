@@ -8,8 +8,7 @@ links:
 
   - title: M0
     description: Yoake-Sablin
-    image: https://blog.okbsablin.su/images/avatar.png
-    website: https://blog.okbsablin.su
+    website: https://sablin39.github.io/
 
   - title: Tastor
     image: https://avatars.githubusercontent.com/u/74226084?v=4
