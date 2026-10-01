@@ -5,7 +5,8 @@ date: 2025-09-09T15:02:33+08:00
 image:
 math:
 license:
-hidden: true
+build:
+  list: never
 comments: true
 draft: false
 ---
