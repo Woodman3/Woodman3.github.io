@@ -30,12 +30,6 @@ if ($Text.Count -gt 0) {
 Write-Host "已创建推文：$relativePath" -ForegroundColor Green
 
 if (-not $NoOpen) {
-    $code = Get-Command code -ErrorAction SilentlyContinue
-    if ($code) {
-        & code --reuse-window $contentPath
-    }
-    else {
-        Invoke-Item -LiteralPath $contentPath
-    }
+    & notepad.exe $contentPath
 }
 
