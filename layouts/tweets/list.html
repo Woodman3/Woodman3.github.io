@@ -10,7 +10,8 @@
             <span class="microblog-count">{{ len $pages }} 条记录</span>
         </header>
 
-        {{ $paginator := .Paginate $pages.ByDate.Reverse }}
+        {{ $pages = $pages.ByDate.Reverse }}
+        {{ $paginator := .Paginate $pages 20 }}
         {{ if gt (len $paginator.Pages) 0 }}
             <section class="microblog-timeline" aria-label="推文时间线">
                 {{ range $paginator.Pages }}

@@ -1,0 +1,21 @@
+{{- $pageTitle := .Title -}}
+{{- $siteTitle := .Site.Title -}}
+{{- $paginator := false -}}
+
+{{- if and (eq .Section "tweets") (eq .Kind "section") -}}
+    {{- $pages := where .RegularPages "Params.hidden" "!=" true -}}
+    {{- $pages = $pages.ByDate.Reverse -}}
+    {{- $paginator = .Paginate $pages 20 -}}
+{{- else -}}
+    {{- $paginator = partial "helper/paginator.html" . -}}
+{{- end -}}
+
+{{- $title := slice -}}
+
+{{- if and $paginator $paginator.HasPrev -}}
+    {{ $title = $title | append (printf "Page %d" $paginator.PageNumber) }}
+{{- end -}}
+
+{{- $title = $title | append (default $siteTitle $pageTitle) -}}
+
+{{ return delimit $title " - " }}
