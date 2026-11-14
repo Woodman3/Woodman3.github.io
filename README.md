@@ -6,6 +6,22 @@ This is a quick start template for [Hugo theme Stack](https://github.com/CaiJimm
 
 It comes with a basic theme structure and configuration. GitHub action has been set up to deploy the theme to a public GitHub page automatically. Also, there's a cron job to update the theme automatically everyday.
 
+## 一键提交
+
+首次使用时，为当前仓库配置 Git 别名：
+
+```powershell
+git config --local alias.ac '!git add . && git commit'
+```
+
+之后运行以下命令，暂存所有改动并提交：
+
+```powershell
+git ac -m "更新文章"
+```
+
+别名依次执行 `git add .` 和 `git commit`，不会自动推送。别名配置保存在本地，克隆仓库后需要重新配置。
+
 ## 新建推文
 
 文件名会根据当前时间自动生成。新建并打开编辑：
